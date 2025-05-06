@@ -15,7 +15,7 @@ interface TriviaApiService{
     @GET("api.php")
     suspend fun getTrivia(
         @Query("amount") amount:Int = 10,
-        @Query("type") type:String = "multple",
+        @Query("type") type:String = "multiple",
         @Query("difficulty") difficulty:String = "easy"
     ):TriviaResponse
 }

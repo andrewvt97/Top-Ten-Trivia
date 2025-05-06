@@ -1,5 +1,7 @@
 package com.example.question_screen.model
 
+import com.google.gson.annotations.SerializedName
+
 data class TriviaResponse(
     val results:List<TriviaQuestions>
 )
@@ -8,6 +10,6 @@ data class TriviaQuestions(
     val difficulty: String,
     val category: String,
     val question: String,
-    val correctAnswer: String,
-    val incorrectAnswers: List<String>
+    @SerializedName("correct_answer") val correctAnswer: String,
+    @SerializedName("incorrect_answers") val incorrectAnswers: List<String>
 )
