@@ -1,4 +1,4 @@
-package com.example.question_screen.ui.theme
+package com.example.toptentrivia.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,7 +1,6 @@
-package com.example.question_screen
+package com.example.toptentrivia
 
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.text.Html
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,13 +24,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.question_screen.viewmodel.TriviaViewModel
+import com.example.toptentrivia.viewmodel.TriviaViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

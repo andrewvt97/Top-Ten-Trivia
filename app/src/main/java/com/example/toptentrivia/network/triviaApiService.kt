@@ -1,5 +1,5 @@
-package com.example.question_screen.network
-import com.example.question_screen.model.TriviaResponse
+package com.example.toptentrivia.network
+import com.example.toptentrivia.model.TriviaResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET

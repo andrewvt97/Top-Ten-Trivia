@@ -1,4 +1,4 @@
-package com.example.question_screen.model
+package com.example.toptentrivia.model
 
 import com.google.gson.annotations.SerializedName
 

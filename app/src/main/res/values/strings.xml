@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">Question_Screen</string>
+    <string name="app_name">Top Ten Trivia</string>
+
+    <string name="login_title">Login</string>
+    <string name="signup_title">Sign Up</string>
+    <string name="enter_username">Enter Username</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="enter_email">Enter Email</string>
+
 </resources>

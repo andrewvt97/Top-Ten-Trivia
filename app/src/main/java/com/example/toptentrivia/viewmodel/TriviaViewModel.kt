@@ -1,11 +1,11 @@
-package com.example.question_screen.viewmodel
+package com.example.toptentrivia.viewmodel
 
 import android.os.CountDownTimer
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.question_screen.model.TriviaQuestions
-import com.example.question_screen.network.TriviaApi
+import com.example.toptentrivia.model.TriviaQuestions
+import com.example.toptentrivia.network.TriviaApi
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
 import android.text.Html

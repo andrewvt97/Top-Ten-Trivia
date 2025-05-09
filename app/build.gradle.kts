@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.question_screen"
+    namespace = "com.example.toptentrivia"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.question_screen"
+        applicationId = "com.example.toptentrivia"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

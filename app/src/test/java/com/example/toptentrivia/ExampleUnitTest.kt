@@ -1,4 +1,4 @@
-package com.example.question_screen
+package com.example.toptentrivia
 
 import org.junit.Test
 
