@@ -54,11 +54,14 @@ class TriviaViewModel:ViewModel() {
         val allOptions = current.incorrectAnswers + current.correctAnswer
         val shuffled = allOptions.shuffled()
         val correct = current.correctAnswer
-        val selected = shuffled[selectedOption.value]
-        if (selected == correct) {
-            score.value += 10
-            correctAnswers.value += 1
+        if (selectedOption.value != -1) {
+            val selected = shuffled[selectedOption.value]
+            if (selected == correct) {
+                score.value += 10
+                correctAnswers.value += 1
+            }
         }
+
     }
 
     fun moveToNextQuestion() {
