@@ -6,5 +6,7 @@
     <string name="enter_username">Enter Username</string>
     <string name="enter_password">Enter Password</string>
     <string name="enter_email">Enter Email</string>
+    <string name="quiz_title">Quiz</string>
+    <string name="summary_title">Summary</string>
 
 </resources>

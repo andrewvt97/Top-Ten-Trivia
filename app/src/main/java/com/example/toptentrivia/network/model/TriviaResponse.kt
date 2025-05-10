@@ -1,4 +1,4 @@
-package com.example.toptentrivia.model
+package com.example.toptentrivia.network.model
 
 import com.google.gson.annotations.SerializedName
 
