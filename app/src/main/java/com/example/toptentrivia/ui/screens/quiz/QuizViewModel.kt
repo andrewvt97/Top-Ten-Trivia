@@ -4,6 +4,7 @@ import android.os.CountDownTimer
 import android.text.Html
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -22,11 +23,11 @@ class QuizViewModel(
     private val triviaRepository: TriviaRepository
 ) : ViewModel() {
 
-
     private var countDownTimer: CountDownTimer? = null
     private val _remainingTime = mutableStateOf(10.0f)
     val remainingTime: State<Float> = _remainingTime
 
+    // can only be either loading, error, or Success, initially starts as loading
     var quizUiState: QuizUiState by mutableStateOf(QuizUiState.Loading)
         private set
 
@@ -36,17 +37,26 @@ class QuizViewModel(
     val score = mutableStateOf(0)
     val correctAnswers = mutableStateOf(0)
 
+    //var shuffledOptionList = mutableStateListOf()
+
+    var shuffledOptionList: List<String> = listOf(
+
+    )
+
     init {
         getTrivia()
     }
 
+    //
     private fun getTrivia() {
+        // Launches a coroutine within the ViewModel’s lifecycle scope
         viewModelScope.launch {
             quizUiState = QuizUiState.Loading
             try {
                 val triviaQuestions = triviaRepository.getTriviaQuestions()
                 if (triviaQuestions.isNotEmpty()) {
-                    quizUiState = QuizUiState.Success(triviaQuestions)
+                    quizUiState = QuizUiState.Success(triviaQuestions) //load questions from repo
+                    shuffleOptionList()
                 } else {
                     quizUiState = QuizUiState.Error
                 }
@@ -56,26 +66,47 @@ class QuizViewModel(
         }
     }
 
+    fun decodeHtml(encoded: String): String {
+        return Html.fromHtml(encoded, Html.FROM_HTML_MODE_LEGACY).toString()
+    }
+
     fun selectOption(index: Int) {
         if (!answeredCurrentQuestion.value) {
             selectedOption.value = index
         }
     }
 
-    fun decodeHtml(encoded: String): String {
-        return Html.fromHtml(encoded, Html.FROM_HTML_MODE_LEGACY).toString()
+    /*fun shuffleOptions(): List<String> {
+        var shuffledOptions: List<String> = listOf()
+        val questions = (quizUiState as? QuizUiState.Success)?.questions
+        if (questions != null && currentQuestionIndex.value < questions.size) {
+            val current = questions[currentQuestionIndex.value]
+            shuffledOptions = (current.incorrectAnswers + current.correctAnswer).shuffled()
+        }
+        return shuffledOptions
+    }*/
+
+    fun shuffleOptionList(){
+        val questions = (quizUiState as? QuizUiState.Success)?.questions
+        if (questions != null && currentQuestionIndex.value < questions.size) {
+            val current = questions[currentQuestionIndex.value]
+            shuffledOptionList = (current.incorrectAnswers + current.correctAnswer).shuffled()
+        }
     }
 
     fun answerQuestion() {
+        // can cast quizUiState to Success? if yes{ did cast succeed?: yes(can do ".questions")}
+
         val questions = (quizUiState as? QuizUiState.Success)?.questions
+
         if (questions != null && currentQuestionIndex.value < questions.size) {
-            answeredCurrentQuestion.value = true
             val current = questions[currentQuestionIndex.value]
-            val allOptions = current.incorrectAnswers + current.correctAnswer
-            val shuffled = allOptions.shuffled()
+            /*answeredCurrentQuestion.value = true
+            val allOptions: List<String> = current.incorrectAnswers + current.correctAnswer
+            val shuffled = allOptions.shuffled()*/
             val correct = current.correctAnswer
             if (selectedOption.value != -1) {
-                val selected = shuffled[selectedOption.value]
+                val selected = shuffledOptionList[selectedOption.value].toString()
                 if (selected == correct) {
                     score.value += 10
                     correctAnswers.value += 1
@@ -92,6 +123,7 @@ class QuizViewModel(
             selectedOption.value = -1
             answeredCurrentQuestion.value = false
         }
+        shuffleOptionList()
     }
 
     fun startTimer() {
