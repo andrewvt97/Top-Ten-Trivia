@@ -72,8 +72,9 @@ fun QuizContent(
     val answeredQuestion = viewModel.answeredCurrentQuestion.value
     val remainingTime = viewModel.remainingTime.value
 
-    //val options = remember(currentIndex) { viewModel.shuffledOptionList }
+    //val options = remember(currentIndex) { viewModel.shuffledOptionList }  //alternative option
     val options = viewModel.shuffledOptionList
+
     // options recomputed only when currentIndex changes
     /*val options = remember(currentIndex) {
         (currentQuestion.incorrectAnswers + currentQuestion.correctAnswer)

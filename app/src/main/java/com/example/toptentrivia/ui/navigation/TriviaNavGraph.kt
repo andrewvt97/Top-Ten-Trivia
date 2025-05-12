@@ -46,7 +46,11 @@ fun TriviaNavHost(
             )
         }
 
-        //composable(route = HomeDestination.route) {}
+        /*composable(route = HomeDestination.route) {
+           HomeScreen(
+               username = "andrewwt97"
+           )
+        }*/
         composable(route = QuizDestination.route) {
             QuizScreen(
                 navController = navController,
