@@ -20,11 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.toptentrivia.R
 import com.example.toptentrivia.network.model.TriviaQuestions
-import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,8 +47,7 @@ fun QuizScreen(
             ErrorScreen()
         }
         is QuizUiState.Success -> {
-            val questions = (quizUiState).questions
-
+            val questions = quizUiState.questions
             QuizContent(navController, viewModel, questions)
         }
     }
@@ -72,15 +69,11 @@ fun QuizContent(
     val answeredQuestion = viewModel.answeredCurrentQuestion.value
     val remainingTime = viewModel.remainingTime.value
 
-    //val options = remember(currentIndex) { viewModel.shuffledOptionList }  //alternative option
-    val options = viewModel.shuffledOptionList
-
-    // options recomputed only when currentIndex changes
-    /*val options = remember(currentIndex) {
+    val options = remember(currentIndex) {
         (currentQuestion.incorrectAnswers + currentQuestion.correctAnswer)
-            .map { decodeHtml(it) } // WAT DOES THIS DO
+            .map { decodeHtml(it) }
             .shuffled()
-    }*/
+    }
 
     LaunchedEffect(currentIndex, answeredQuestion) {
         if (!answeredQuestion) {
@@ -94,23 +87,17 @@ fun QuizContent(
             .padding(16.dp)
     ) {
 
-        // Top section with back button, progress bar, and score
+        // Top bar: Back, Progress bar, Score
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            // back button
-            IconButton(
-                onClick = { /* Exit or back action */ },
-                modifier = Modifier.size(40.dp)
-            ) {
+            IconButton(onClick = { /* Optional back action */ }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // progress bar
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -126,7 +113,9 @@ fun QuizContent(
                         .background(Color(0xFF00416A))
                 )
             }
+
             Spacer(modifier = Modifier.width(16.dp))
+
             Text(
                 text = "${currentIndex + 1}/${questions.size}",
                 fontSize = 14.sp,
@@ -135,7 +124,6 @@ fun QuizContent(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // score
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Star, contentDescription = "Score", tint = Color(0xFF00416A))
                 Text(
@@ -147,7 +135,7 @@ fun QuizContent(
             }
         }
 
-        // timer
+        // Timer
         Text(
             text = String.format("%.1f", remainingTime),
             fontSize = 16.sp,
@@ -158,7 +146,7 @@ fun QuizContent(
                 .padding(top = 8.dp)
         )
 
-        // question card
+        // Question Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -166,9 +154,7 @@ fun QuizContent(
             colors = CardDefaults.cardColors(containerColor = Color(0xFF00416A)),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(20.dp)
-            ) {
+            Column(modifier = Modifier.padding(20.dp)) {
                 Text(
                     text = "Question:",
                     fontSize = 18.sp,
@@ -177,9 +163,8 @@ fun QuizContent(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // question
                 Text(
-                    text = decodeHtml(currentQuestion.question),           //decodeHtml call
+                    text = decodeHtml(currentQuestion.question),
                     fontSize = 18.sp,
                     fontStyle = FontStyle.Italic,
                     color = Color.White,
@@ -189,7 +174,7 @@ fun QuizContent(
             }
         }
 
-        // answer choices
+        // Answer options
         options.forEachIndexed { index, option ->
             val isSelected = selectedOption == index
             val buttonColor = if (isSelected) Color(0xFF3498DB) else Color.White
@@ -198,7 +183,7 @@ fun QuizContent(
             Button(
                 onClick = {
                     if (!answeredQuestion) {
-                        viewModel.selectOption(index) //updates viewmodel's "selectedOption"
+                        viewModel.selectOption(index)
                     }
                 },
                 modifier = Modifier
@@ -212,10 +197,8 @@ fun QuizContent(
                 shape = RoundedCornerShape(8.dp),
                 contentPadding = PaddingValues(16.dp)
             ) {
-
-                // choices
                 Text(
-                    text = option.toString(),
+                    text = option,
                     color = textColor,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -224,18 +207,17 @@ fun QuizContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // next button; submits selected choice
+        // Next button
         Button(
             onClick = {
-                // end of quiz behavior
                 if (answeredQuestion) {
                     if (currentIndex < questions.size - 1) {
                         viewModel.moveToNextQuestion()
                     } else {
                         navController.navigate("summary")
                     }
-                } else if (selectedOption != -1) { // check selectedOption
-                    viewModel.answerQuestion()
+                } else if (selectedOption != -1) {
+                    viewModel.answerQuestion(questions, options)
 
                     scope.launch {
                         delay(1000)
@@ -267,7 +249,6 @@ fun QuizContent(
             }
         }
     }
-
 }
 
 fun decodeHtml(encoded: String): String {
