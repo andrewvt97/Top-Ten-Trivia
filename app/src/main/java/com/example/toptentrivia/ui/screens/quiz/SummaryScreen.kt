@@ -12,6 +12,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.toptentrivia.ui.screens.leaderboard.LeaderboardDestination
+import com.example.toptentrivia.ui.screens.leaderboard.LeaderboardScreen
+
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.toptentrivia.R
@@ -84,5 +87,19 @@ fun SummaryScreen(
         ) {
             Text("Start New Quiz", fontSize = 16.sp)
         }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = {
+                navController.navigate("leaderboard")
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF00416A)
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text("View Leaderboard", fontSize = 16.sp)
+        }
+
     }
 }

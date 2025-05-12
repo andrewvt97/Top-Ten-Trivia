@@ -4,6 +4,9 @@ package com.example.toptentrivia.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.toptentrivia.ui.screens.leaderboard.LeaderboardDestination
+import com.example.toptentrivia.ui.screens.leaderboard.LeaderboardScreen
+
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -73,5 +76,9 @@ fun TriviaNavHost(
                 viewModel = quizViewModel
             )
         }
+        composable(route = LeaderboardDestination.route) {
+            LeaderboardScreen(navController = navController)
+        }
+
     }
 }
