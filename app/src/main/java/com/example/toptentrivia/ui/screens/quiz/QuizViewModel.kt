@@ -72,11 +72,18 @@ class QuizViewModel(
             val correct = current.correctAnswer
             val selected = options[selectedOption.value]
             if (selected == correct) {
-                score.value += 10
+                val timeLeft = remainingTime.value
+                val points = when {
+                    timeLeft > 5f -> 25
+                    timeLeft > 0f -> 15
+                    else -> 10
+                }
+                score.value += points
                 correctAnswers.value += 1
             }
         }
     }
+
 
     fun moveToNextQuestion() {
         val questions = (quizUiState as? QuizUiState.Success)?.questions
