@@ -14,12 +14,14 @@ object AppViewModelProvider {
     val Factory = viewModelFactory {
         // Initializer for LoginViewModel
         initializer {
-            LoginViewModel()
+            val app = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as TopTenTriviaApplication
+            LoginViewModel(app.container.userRepository)
         }
 
         // Initializer for SignUpViewModel
         initializer {
-            SignUpViewModel()
+            val app = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as TopTenTriviaApplication
+            SignUpViewModel(app.container.userRepository)
         }
 
         // Initializer for QuizViewModel

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,10 +26,17 @@ object LoginDestination : NavigationDestination {
 @Composable
 fun LoginScreen(
     navigateToSignUp: () -> Unit,
+    navigateToQuiz: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = viewModel.loginUiState.collectAsState()
+
+    LaunchedEffect(uiState.value.loginSuccessful) {
+        if (uiState.value.loginSuccessful) {
+            navigateToQuiz()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -95,10 +103,3 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    TopTenTriviaTheme {
-        LoginScreen(navigateToSignUp = {})
-    }
-}

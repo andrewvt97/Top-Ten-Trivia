@@ -29,17 +29,27 @@ fun TriviaNavHost(
     )
     NavHost(
         navController = navController,
-        startDestination = QuizDestination.route,
+        startDestination = LoginDestination.route,
         modifier = modifier
     ) {
         composable(route = LoginDestination.route) {
             LoginScreen(
-                navigateToSignUp = { navController.navigate(SignUpDestination.route) }
+                navigateToSignUp = { navController.navigate(SignUpDestination.route) },
+                navigateToQuiz = {
+                    navController.navigate(QuizDestination.route) {
+                        popUpTo(LoginDestination.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(route = SignUpDestination.route) {
             SignUpScreen(
-                navigateToLogin = { navController.navigate(LoginDestination.route) }
+                navigateToLogin = { navController.navigate(LoginDestination.route) },
+                navigateToQuiz = {
+                    navController.navigate(QuizDestination.route) {
+                        popUpTo(SignUpDestination.route) { inclusive = true }
+                    }
+                }
             )
         }
 

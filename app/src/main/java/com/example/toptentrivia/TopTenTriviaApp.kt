@@ -11,7 +11,3 @@ fun TopTenTriviaApp() {
     TriviaNavHost(navController = navController)
 }
 
-// move this or get rid of this
-fun decodeHtml(encoded: String): String {
-    return Html.fromHtml(encoded, Html.FROM_HTML_MODE_LEGACY).toString()
-}

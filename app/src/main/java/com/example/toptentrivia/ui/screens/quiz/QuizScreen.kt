@@ -1,5 +1,6 @@
 package com.example.toptentrivia.ui.screens.quiz
 
+import android.text.Html
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.toptentrivia.R
-import com.example.toptentrivia.decodeHtml
 import com.example.toptentrivia.network.model.TriviaQuestions
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
@@ -250,4 +250,9 @@ fun QuizContent(
             }
         }
     }
+
+}
+
+fun decodeHtml(encoded: String): String {
+    return Html.fromHtml(encoded, Html.FROM_HTML_MODE_LEGACY).toString()
 }
