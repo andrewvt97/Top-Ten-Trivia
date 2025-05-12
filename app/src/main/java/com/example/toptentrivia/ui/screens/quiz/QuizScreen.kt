@@ -50,6 +50,7 @@ fun QuizScreen(
         }
         is QuizUiState.Success -> {
             val questions = (quizUiState).questions
+
             QuizContent(navController, viewModel, questions)
         }
     }
@@ -71,11 +72,15 @@ fun QuizContent(
     val answeredQuestion = viewModel.answeredCurrentQuestion.value
     val remainingTime = viewModel.remainingTime.value
 
-    val options = remember(currentIndex) {
+    //val options = remember(currentIndex) { viewModel.shuffledOptionList }  //alternative option
+    val options = viewModel.shuffledOptionList
+
+    // options recomputed only when currentIndex changes
+    /*val options = remember(currentIndex) {
         (currentQuestion.incorrectAnswers + currentQuestion.correctAnswer)
-            .map { decodeHtml(it) }
+            .map { decodeHtml(it) } // WAT DOES THIS DO
             .shuffled()
-    }
+    }*/
 
     LaunchedEffect(currentIndex, answeredQuestion) {
         if (!answeredQuestion) {
@@ -88,10 +93,14 @@ fun QuizContent(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
+        // Top section with back button, progress bar, and score
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
+            // back button
             IconButton(
                 onClick = { /* Exit or back action */ },
                 modifier = Modifier.size(40.dp)
@@ -101,6 +110,7 @@ fun QuizContent(
 
             Spacer(modifier = Modifier.width(16.dp))
 
+            // progress bar
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -116,9 +126,7 @@ fun QuizContent(
                         .background(Color(0xFF00416A))
                 )
             }
-
             Spacer(modifier = Modifier.width(16.dp))
-
             Text(
                 text = "${currentIndex + 1}/${questions.size}",
                 fontSize = 14.sp,
@@ -127,6 +135,7 @@ fun QuizContent(
 
             Spacer(modifier = Modifier.width(16.dp))
 
+            // score
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Star, contentDescription = "Score", tint = Color(0xFF00416A))
                 Text(
@@ -138,6 +147,7 @@ fun QuizContent(
             }
         }
 
+        // timer
         Text(
             text = String.format("%.1f", remainingTime),
             fontSize = 16.sp,
@@ -148,6 +158,7 @@ fun QuizContent(
                 .padding(top = 8.dp)
         )
 
+        // question card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -166,8 +177,9 @@ fun QuizContent(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
+                // question
                 Text(
-                    text = decodeHtml(currentQuestion.question),
+                    text = decodeHtml(currentQuestion.question),           //decodeHtml call
                     fontSize = 18.sp,
                     fontStyle = FontStyle.Italic,
                     color = Color.White,
@@ -177,6 +189,7 @@ fun QuizContent(
             }
         }
 
+        // answer choices
         options.forEachIndexed { index, option ->
             val isSelected = selectedOption == index
             val buttonColor = if (isSelected) Color(0xFF3498DB) else Color.White
@@ -185,7 +198,7 @@ fun QuizContent(
             Button(
                 onClick = {
                     if (!answeredQuestion) {
-                        viewModel.selectOption(index)
+                        viewModel.selectOption(index) //updates viewmodel's "selectedOption"
                     }
                 },
                 modifier = Modifier
@@ -199,8 +212,10 @@ fun QuizContent(
                 shape = RoundedCornerShape(8.dp),
                 contentPadding = PaddingValues(16.dp)
             ) {
+
+                // choices
                 Text(
-                    text = option,
+                    text = option.toString(),
                     color = textColor,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -209,15 +224,17 @@ fun QuizContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        // next button; submits selected choice
         Button(
             onClick = {
+                // end of quiz behavior
                 if (answeredQuestion) {
                     if (currentIndex < questions.size - 1) {
                         viewModel.moveToNextQuestion()
                     } else {
                         navController.navigate("summary")
                     }
-                } else if (selectedOption != -1) {
+                } else if (selectedOption != -1) { // check selectedOption
                     viewModel.answerQuestion()
 
                     scope.launch {

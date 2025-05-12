@@ -10,7 +10,6 @@ interface TriviaRepository {
 class NetworkTriviaRepository(
     private val triviaApiService: TriviaApiService
 ) : TriviaRepository {
-
     override suspend fun getTriviaQuestions(): List<TriviaQuestions> {
         return triviaApiService.getTrivia().results
     }

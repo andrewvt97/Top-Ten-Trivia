@@ -18,15 +18,18 @@ import com.example.toptentrivia.ui.screens.quiz.SummaryScreen
 import com.example.toptentrivia.ui.screens.signup.SignUpDestination
 import com.example.toptentrivia.ui.screens.signup.SignUpScreen
 
+//handles navigation of entire app
 @Composable
 fun TriviaNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
-
+    // viewModel object instance creation
     val quizViewModel: QuizViewModel = viewModel(
+        // .Factory creates and retrieves instance via Compose MAGIC
         factory = AppViewModelProvider.Factory
     )
+
     NavHost(
         navController = navController,
         startDestination = LoginDestination.route,
@@ -53,6 +56,11 @@ fun TriviaNavHost(
             )
         }
 
+        /*composable(route = HomeDestination.route) {
+           HomeScreen(
+               username = "andrewwt97"
+           )
+        }*/
         composable(route = QuizDestination.route) {
             QuizScreen(
                 navController = navController,
