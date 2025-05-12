@@ -10,6 +10,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.toptentrivia.data.TriviaRepository
+import com.example.toptentrivia.data.UserRepository
+import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.network.model.TriviaQuestions
 import kotlinx.coroutines.launch
 
@@ -20,8 +22,18 @@ sealed interface QuizUiState {
 }
 
 class QuizViewModel(
-    private val triviaRepository: TriviaRepository
+    private val triviaRepository: TriviaRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
+
+    var user by mutableStateOf<User?>(null)
+        private set
+
+    fun loadUser(username: String) {
+        viewModelScope.launch {
+            user = userRepository.getUserByUsername(username)
+        }
+    }
 
     private var countDownTimer: CountDownTimer? = null
     private val _remainingTime = mutableStateOf(10.0f)
@@ -66,9 +78,6 @@ class QuizViewModel(
         }
     }
 
-    fun decodeHtml(encoded: String): String {
-        return Html.fromHtml(encoded, Html.FROM_HTML_MODE_LEGACY).toString()
-    }
 
     fun selectOption(index: Int) {
         if (!answeredCurrentQuestion.value) {
@@ -98,6 +107,7 @@ class QuizViewModel(
         // can cast quizUiState to Success? if yes{ did cast succeed?: yes(can do ".questions")}
 
         val questions = (quizUiState as? QuizUiState.Success)?.questions
+        val u = user ?: return
 
         if (questions != null && currentQuestionIndex.value < questions.size) {
             val current = questions[currentQuestionIndex.value]
@@ -129,6 +139,14 @@ class QuizViewModel(
     fun startTimer() {
         _remainingTime.value = 10.0f
         countDownTimer?.cancel()
+
+        user?.let {
+            if (it.questionsAttemptedToday in -1..9) {
+                it.questionsAttemptedToday += 1
+                it.questionsAttemptedAllTime += 1
+                viewModelScope.launch { userRepository.updateUser(it) }
+            }
+        }
 
         countDownTimer = object : CountDownTimer(10000, 100) {
             override fun onTick(millisUntilFinished: Long) {

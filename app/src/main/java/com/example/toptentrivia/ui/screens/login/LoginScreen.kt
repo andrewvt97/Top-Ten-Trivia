@@ -26,7 +26,7 @@ object LoginDestination : NavigationDestination {
 @Composable
 fun LoginScreen(
     navigateToSignUp: () -> Unit,
-    navigateToQuiz: () -> Unit,
+    navigateToHome: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -34,7 +34,7 @@ fun LoginScreen(
 
     LaunchedEffect(uiState.value.loginSuccessful) {
         if (uiState.value.loginSuccessful) {
-            navigateToQuiz()
+            navigateToHome(uiState.value.username)
         }
     }
 

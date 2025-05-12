@@ -32,13 +32,19 @@ import kotlinx.coroutines.launch
 object QuizDestination : NavigationDestination {
     override val route = "quiz"
     override val titleRes = R.string.quiz_title
+    override fun createRoute(username: String) = "quiz/$username"
 }
 
 @Composable
 fun QuizScreen(
     navController: NavController,
+    username: String,
     viewModel: QuizViewModel
 ) {
+    LaunchedEffect(username) {
+        viewModel.loadUser(username)
+    }
+
     val quizUiState = viewModel.quizUiState
 
     when (quizUiState) {

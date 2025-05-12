@@ -9,6 +9,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,22 +20,56 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.toptentrivia.R
+import com.example.toptentrivia.data.model.User
+import com.example.toptentrivia.ui.AppViewModelProvider
+import com.example.toptentrivia.ui.navigation.NavigationDestination
 import com.example.toptentrivia.ui.theme.TopTenTriviaTheme
 
+
+object HomeDestination : NavigationDestination {
+    override val route = "home"
+    override val titleRes = R.string.home_title
+}
+
 @Composable
-fun HomeScreen(username: String) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        HomeTopBar(username)
+fun HomeScreen (
+    username: String,
+    onNavigateToQuiz: (String) -> Unit,
+    onNavigateToSummary: () -> Unit,
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
 
-        // Content
-        HomeContent()
+    val user = viewModel.user.collectAsState()
 
-        // Bottom Navigation
-        BottomNavBar()
+    LaunchedEffect(username) {
+        viewModel.loadUser(username)
     }
+
+    user.value?.let { u ->
+        Column(modifier = Modifier.fillMaxSize()) {
+            HomeTopBar(u.username)
+            HomeContent(
+                user = u,
+                onNavigateToQuiz = { onNavigateToQuiz(u.username) },
+                onNavigateToSummary = onNavigateToSummary
+            )
+            BottomNavBar()
+        }
+    }
+
+//    Column(
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//        HomeTopBar(username)
+//
+//        // Content
+//        HomeContent()
+//
+//        // Bottom Navigation
+//        BottomNavBar()
+//    }
 }
 
 @Composable
@@ -81,36 +117,57 @@ private fun HomeTopBar(username: String) {
     }
 }
 
+//@Composable
+//private fun HomeContent() {
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(16.dp),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Column(
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.Center
+//        ) {
+//            // Streak Card
+//            StreakCard()
+//
+//            Spacer(modifier = Modifier.height(16.dp))
+//
+//            // Stats Card
+//            StatsCard()
+//
+//            Spacer(modifier = Modifier.height(24.dp))
+//
+//            // Play Button
+//            PlayButton()
+//        }
+//    }
+//}
+
 @Composable
-private fun HomeContent() {
+private fun HomeContent(
+    user: User,
+    onNavigateToQuiz: (String) -> Unit,
+    onNavigateToSummary: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            // Streak Card
-            StreakCard()
-
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            StreakCard(user)
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Stats Card
-            StatsCard()
-
+            StatsCard(user)
             Spacer(modifier = Modifier.height(24.dp))
-
-            // Play Button
-            PlayButton()
+            PlayOrViewScoreButton(user.username, user.questionsAttemptedToday, onNavigateToQuiz, onNavigateToSummary)
         }
     }
 }
 
 @Composable
-private fun StreakCard() {
+private fun StreakCard(user: User) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -130,7 +187,7 @@ private fun StreakCard() {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "41 Days",
+                text = "${user.streak} Days",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -138,8 +195,9 @@ private fun StreakCard() {
     }
 }
 
+
 @Composable
-private fun StatsCard() {
+private fun StatsCard(user: User) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -158,12 +216,17 @@ private fun StatsCard() {
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
-            StatsRow("Accuracy:", "43%")
-            StatsRow("Average Points:", "984.5")
-            StatsRow("Streak Percentile:", "44th")
-            StatsRow("Top Ten Finishes:", "2")
-            StatsRow("All-Time Ranking:", "1,295,782")
-            StatsRow("Today's Ranking:", "---")
+
+            val accuracy = if (user.questionsAttemptedAllTime > 0) {
+                (user.correctAnswersAllTime.toFloat() / user.questionsAttemptedAllTime * 100).toInt()
+            } else 0
+            StatsRow("Accuracy:", "$accuracy%")
+            StatsRow("Average Points:", user.averagePoints.toInt().toString())
+            StatsRow("Streak Percentile:", "${user.streak} days")
+//            StatsRow("Top Ten Finishes:", user.topTenFinishes.toString())
+            StatsRow("All-Time Ranking", user.gamesPlayedAllTime.toString())
+            StatsRow("Today's Ranking:", user.pointsToday.toString())
+
         }
     }
 }
@@ -190,27 +253,52 @@ private fun StatsRow(label: String, value: String) {
 }
 
 @Composable
-private fun PlayButton() {
+private fun PlayOrViewScoreButton(
+    username: String,
+    questionsAttempted: Int,
+    onPlay: (String) -> Unit,
+    onViewScore: () -> Unit
+) {
+    val (label, action) = if (questionsAttempted in -1..9) {
+        "Play" to { onPlay(username) }
+    } else {
+        "View Score" to onViewScore
+    }
+
     Button(
-        onClick = {
-            // TODO: Navigation to game screen would be implemented here
-        },
+        onClick = action,
         shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF0A2742)
-        ),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0A2742)),
         modifier = Modifier
             .fillMaxWidth(0.5f)
             .height(48.dp)
     ) {
-        Text(
-            text = "Play",
-            color = Color.White,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text(text = label, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
     }
 }
+
+//@Composable
+//private fun PlayButton() {
+//    Button(
+//        onClick = {
+//            // TODO: Navigation to game screen would be implemented here
+//        },
+//        shape = RoundedCornerShape(8.dp),
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = Color(0xFF0A2742)
+//        ),
+//        modifier = Modifier
+//            .fillMaxWidth(0.5f)
+//            .height(48.dp)
+//    ) {
+//        Text(
+//            text = "Play",
+//            color = Color.White,
+//            fontSize = 16.sp,
+//            fontWeight = FontWeight.Bold
+//        )
+//    }
+//}
 
 
 @Composable
@@ -246,11 +334,11 @@ fun NavBarItem(iconRes: Int, label: String, isSelected: Boolean) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    TopTenTriviaTheme {
-        HomeScreen("andrewwt97")
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview() {
+//    TopTenTriviaTheme {
+//        HomeScreen("andrewwt97")
+//    }
+//}
 

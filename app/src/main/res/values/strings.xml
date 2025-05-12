@@ -8,5 +8,6 @@
     <string name="enter_email">Enter Email</string>
     <string name="quiz_title">Quiz</string>
     <string name="summary_title">Summary</string>
+    <string name="home_title"> Home</string>
 
 </resources>

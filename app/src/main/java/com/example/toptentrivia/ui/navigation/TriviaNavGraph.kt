@@ -8,6 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.toptentrivia.ui.AppViewModelProvider
+import com.example.toptentrivia.ui.screens.home.HomeDestination
+import com.example.toptentrivia.ui.screens.home.HomeScreen
 import com.example.toptentrivia.ui.screens.login.LoginDestination
 import com.example.toptentrivia.ui.screens.login.LoginScreen
 import com.example.toptentrivia.ui.screens.quiz.QuizDestination
@@ -35,11 +37,21 @@ fun TriviaNavHost(
         startDestination = LoginDestination.route,
         modifier = modifier
     ) {
+//        composable(route = LoginDestination.route) {
+//            LoginScreen(
+//                navigateToSignUp = { navController.navigate(SignUpDestination.route) },
+//                navigateToHome = {
+//                    navController.navigate(HomeDestination.route) {
+//                        popUpTo(LoginDestination.route) { inclusive = true }
+//                    }
+//                }
+//            )
+//        }
         composable(route = LoginDestination.route) {
             LoginScreen(
                 navigateToSignUp = { navController.navigate(SignUpDestination.route) },
-                navigateToQuiz = {
-                    navController.navigate(QuizDestination.route) {
+                navigateToHome = { username ->
+                    navController.navigate(HomeDestination.createRoute(username)) {
                         popUpTo(LoginDestination.route) { inclusive = true }
                     }
                 }
@@ -48,23 +60,36 @@ fun TriviaNavHost(
         composable(route = SignUpDestination.route) {
             SignUpScreen(
                 navigateToLogin = { navController.navigate(LoginDestination.route) },
-                navigateToQuiz = {
-                    navController.navigate(QuizDestination.route) {
+                navigateToHome = { username ->
+                    navController.navigate(HomeDestination.createRoute(username)) {
                         popUpTo(SignUpDestination.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        /*composable(route = HomeDestination.route) {
-           HomeScreen(
-               username = "andrewwt97"
-           )
-        }*/
-        composable(route = QuizDestination.route) {
+        composable(route = "home/{username}") { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: return@composable
+            HomeScreen(
+                username = username,
+                onNavigateToQuiz = { username ->
+                    navController.navigate(QuizDestination.createRoute(username))
+                },
+                onNavigateToSummary = { navController.navigate(SummaryDestination.route) }
+            )
+        }
+//        composable(route = QuizDestination.route) {
+//            QuizScreen(
+//                navController = navController,
+//                viewModel = quizViewModel
+//            )
+//        }
+        composable(route = "quiz/{username}") { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: return@composable
             QuizScreen(
                 navController = navController,
-                viewModel = quizViewModel
+                viewModel = quizViewModel,
+                username = username
             )
         }
         composable(route = SummaryDestination.route) {

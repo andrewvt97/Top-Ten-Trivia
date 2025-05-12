@@ -9,6 +9,7 @@ import com.example.toptentrivia.TopTenTriviaApplication
 import com.example.toptentrivia.ui.screens.login.LoginViewModel
 import com.example.toptentrivia.ui.screens.signup.SignUpViewModel
 import com.example.toptentrivia.ui.screens.quiz.QuizViewModel
+import com.example.toptentrivia.ui.screens.home.HomeViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -24,10 +25,19 @@ object AppViewModelProvider {
             SignUpViewModel(app.container.userRepository)
         }
 
+        // Initializer for HomeViewModel
+        initializer {
+            val app = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as TopTenTriviaApplication
+            HomeViewModel(app.container.userRepository)
+        }
+
         // Initializer for QuizViewModel
         initializer {
             val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as TopTenTriviaApplication)
-            QuizViewModel(app.container.triviaRepository)
+            QuizViewModel(
+                app.container.triviaRepository,
+                userRepository = app.container.userRepository
+            )
         }
     }
 }

@@ -26,15 +26,16 @@ object SignUpDestination : NavigationDestination {
 @Composable
 fun SignUpScreen(
     navigateToLogin: () -> Unit,
-    navigateToQuiz: () -> Unit,
+    navigateToHome: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = viewModel.signUpUiState.collectAsState()
 
+
     LaunchedEffect(uiState.value.signUpSuccessful) {
         if (uiState.value.signUpSuccessful) {
-            navigateToQuiz()
+            navigateToHome(uiState.value.username)
         }
     }
 

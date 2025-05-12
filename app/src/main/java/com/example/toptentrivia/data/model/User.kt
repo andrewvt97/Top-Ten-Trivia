@@ -18,12 +18,15 @@ data class User(
     val email: String,
     val username: String,
     val password: String,
-    val pointsToday: Int = 0,
-    val correctAnswersToday: Int = 0,
-    val streak: Int = 0,
-    val gamesPlayedAllTime: Int = 0,
-    val averagePoints: Double = 0.0,
-    val correctAnswersAllTime: Int = 0,
-    val topTenFinishes: Int = 0,
-    val lastVisitDate: String = ""
+
+    var pointsToday: Int = 0, // update after question answered
+    var correctAnswersToday: Int = 0, // update after question answered
+    var questionsAttemptedToday: Int = -1, // update at start of question
+    var streak: Int = 0, // update on login on new day
+    var gamesPlayedAllTime: Int = 0, // update on game start
+    var averagePoints: Double = 0.0, // update on login on new day
+    var correctAnswersAllTime: Int = 0, // update after question answered
+    var questionsAttemptedAllTime: Int = 0, // update at start of question
+    var topTenFinishes: Int = 0, // unused for now
+    var lastVisitDate: String = "" // update on login
 )
