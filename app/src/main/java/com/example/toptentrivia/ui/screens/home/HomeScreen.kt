@@ -212,8 +212,8 @@ private fun StatsCard(
             StatsRow("Average Points:", user.averagePoints.toInt().toString())
             StatsRow("Streak Ranking:", streakRank.value?.toString() ?: "-")
             StatsRow("Games Played:", user.gamesPlayedAllTime.toString())
-            StatsRow("All-Time Ranking:", totalPointsRank.value?.toString() ?: "...")
-            StatsRow("Today's Ranking:", todayPointsRank.value?.toString() ?: "...")
+            StatsRow("All-Time Ranking:", totalPointsRank.value?.toString() ?: "-")
+            StatsRow("Today's Ranking:", todayPointsRank.value?.toString() ?: "-")
 
         }
     }
@@ -277,11 +277,8 @@ fun BottomNavBar() {
             .padding(12.dp)
     ) {
         /*NavBarItem(R.drawable.ic_home, "Home", true)
-        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false)
-        NavBarItem(R.drawable.ic_profile, "Profile", false)
-        NavBarItem(R.drawable.ic_settings, "Settings", false)*/
-    }
-}
+        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
+    } }
 
 @Composable
 fun NavBarItem(iconRes: Int, label: String, isSelected: Boolean) {
