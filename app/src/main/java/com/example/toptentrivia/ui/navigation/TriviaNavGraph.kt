@@ -35,7 +35,7 @@ fun TriviaNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = LoginDestination.route,
+        startDestination = QuizDestination.route,
         modifier = modifier
     ) {
         composable(route = LoginDestination.route) {

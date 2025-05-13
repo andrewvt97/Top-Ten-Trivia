@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -84,27 +85,34 @@ fun QuizContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
 
         // Top bar: Back, Progress bar, Score
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             IconButton(onClick = { /* Optional back action */ }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(
+                    Icons.Filled.Close, contentDescription = "Back")
+            //Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            //Spacer(modifier = Modifier.width(16.dp))
 
+            //progress bar
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .height(13.dp)
+                    .clip(RoundedCornerShape(8.dp))
                     .background(Color.LightGray)
             ) {
+                //inner progress bar
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -114,18 +122,23 @@ fun QuizContent(
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            //Spacer(modifier = Modifier.width(2.dp))
 
+            // progress text
             Text(
                 text = "${currentIndex + 1}/${questions.size}",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Star, contentDescription = "Score", tint = Color(0xFF00416A))
+            // score
+            Row(
+                modifier = Modifier.padding(end = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.Star, contentDescription = "Score", tint = Color(0xFFFFE04B))
                 Text(
                     text = "$score",
                     fontSize = 18.sp,
@@ -138,12 +151,12 @@ fun QuizContent(
         // Timer
         Text(
             text = String.format("%.1f", remainingTime),
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
+                .padding(top = 16.dp, bottom = 16.dp)
         )
 
         // Question Card
@@ -165,7 +178,8 @@ fun QuizContent(
 
                 Text(
                     text = decodeHtml(currentQuestion.question),
-                    fontSize = 18.sp,
+                    fontSize = 21.sp,
+                    fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
                     color = Color.White,
                     textAlign = TextAlign.Center,
@@ -174,8 +188,63 @@ fun QuizContent(
             }
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+
         // Answer options
-        options.forEachIndexed { index, option ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                //.weight(1f)
+                .padding(top = 80.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ){
+            options.forEachIndexed { index, option ->
+                val isSelected = selectedOption == index
+                val buttonColor = if (isSelected) Color(0xFF3498DB) else Color.White
+                val textColor = if (isSelected) Color.White else Color.Black
+
+                Button(
+                    onClick = {
+                        if (!answeredQuestion) {
+                            viewModel.selectOption(index)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(
+                            elevation = if (isSelected) 16.dp else 4.dp,
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "${index + 1}.)",
+                            color = textColor,
+                            fontSize = 18.sp,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = option,
+                                fontSize = 18.sp,
+                                color = textColor,
+                            )
+                        }
+
+                    }
+                }
+            }
+        }
+        /*options.forEachIndexed { index, option ->
             val isSelected = selectedOption == index
             val buttonColor = if (isSelected) Color(0xFF3498DB) else Color.White
             val textColor = if (isSelected) Color.White else Color.Black
@@ -203,9 +272,9 @@ fun QuizContent(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-        }
+        }*/
 
-        Spacer(modifier = Modifier.weight(1f))
+        //Spacer(modifier = Modifier.weight(1f))
 
         // Next button
         Button(
@@ -231,7 +300,7 @@ fun QuizContent(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = 60.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00416A)),
             shape = RoundedCornerShape(8.dp)
         ) {
