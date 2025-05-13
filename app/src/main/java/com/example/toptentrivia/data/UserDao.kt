@@ -25,8 +25,19 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     suspend fun getUserByEmail(email: String): User?
 
-
     // update data
     @Update
     suspend fun updateUser(user: User)
+
+    // check for users who have logged in yesterday or today (active streak) and order them
+    @Query("SELECT * FROM users WHERE lastVisitDate = :today OR lastVisitDate = :yesterday ORDER BY streak DESC")
+    suspend fun getActiveUsersByStreak(today: String, yesterday: String): List<User>
+
+    // find the top performing users
+    @Query("SELECT * FROM users ORDER BY totalPoints DESC")
+    suspend fun getUsersByTotalPoints(): List<User>
+
+    // find the top performers today
+    @Query("SELECT * FROM users WHERE lastVisitDate = :today ORDER BY pointsToday DESC")
+    suspend fun getUsersByPointsToday(today: String): List<User>
 }

@@ -1,6 +1,8 @@
 package com.example.toptentrivia.ui.screens.signup
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -16,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.toptentrivia.R
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
+import com.example.toptentrivia.ui.screens.UserViewModel
 import com.example.toptentrivia.ui.theme.TopTenTriviaTheme
 
 object SignUpDestination : NavigationDestination {
@@ -23,11 +26,13 @@ object SignUpDestination : NavigationDestination {
     override val titleRes = R.string.signup_title
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SignUpScreen(
     navigateToLogin: () -> Unit,
-    navigateToHome: (String) -> Unit,
+    navigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
+    userViewModel: UserViewModel,
     viewModel: SignUpViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = viewModel.signUpUiState.collectAsState()
@@ -35,7 +40,8 @@ fun SignUpScreen(
 
     LaunchedEffect(uiState.value.signUpSuccessful) {
         if (uiState.value.signUpSuccessful) {
-            navigateToHome(uiState.value.username)
+            userViewModel.loadUser(uiState.value.username)
+            navigateToHome()
         }
     }
 

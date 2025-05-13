@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +20,7 @@ import com.example.toptentrivia.R
 import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
+import com.example.toptentrivia.ui.screens.UserViewModel
 import com.example.toptentrivia.ui.screens.quiz.QuizUiState
 import com.example.toptentrivia.ui.screens.quiz.QuizViewModel
 
@@ -30,36 +32,23 @@ object SummaryDestination : NavigationDestination {
 @Composable
 fun SummaryScreen(
     navController: NavController,
-     viewModel: QuizViewModel
+    viewModel: QuizViewModel,
+    userViewModel: UserViewModel
 ) {
-    val user = viewModel.user
+//    val user = viewModel.user
+//    val quizUiState = viewModel.quizUiState
 //    val score = viewModel.score.value
 //    val correctAnswers = viewModel.correctAnswers.value
 //    val totalQuestions = when (quizUiState) {
 //        is QuizUiState.Success -> quizUiState.questions.size
 //        else -> 0
 //    }
-    when {
-        user == null -> {
-            // While user is still loading
-            LoadingScreen()
-        }
 
-        else -> {
-            viewModel.updateAverage()
+    val user = userViewModel.user.collectAsState().value
+    val correctAnswers = user?.correctAnswersToday ?: 0
 
-            SummaryContent(user)
-        }
-
-
-    }
-}
-
-@Composable
-fun SummaryContent(user:User) {
-    val score = user.pointsToday
-    val correctAnswers = user.correctAnswersToday
-    val totalQuestions = user.questionsAttemptedToday
+    val score = user?.pointsToday?.toInt() ?: 0
+    val totalQuestions = user?.questionsAttemptedToday ?: 0
 
     Column(
         modifier = Modifier
@@ -92,19 +81,19 @@ fun SummaryContent(user:User) {
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-//            Button(
-//                onClick = {
-//                    viewModel.resetQuiz()
-//                    navController.navigate("quiz") {
-//                        popUpTo("quiz") { inclusive = true }
-//                    }
-//                },
-//                colors = ButtonDefaults.buttonColors(
-//                    containerColor = Color(0xFF00416A)
-//                ),
-//                shape = RoundedCornerShape(8.dp)
-//            ) {
-//                Text("Start New Quiz", fontSize = 16.sp)
-//            }
+            Button(
+                onClick = {
+                    viewModel.resetQuiz()
+                    navController.navigate("quiz") {
+                        popUpTo("quiz") { inclusive = true }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF00416A)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Start New Quiz", fontSize = 16.sp)
+            }
         }
     }

@@ -1,6 +1,8 @@
 
 package com.example.toptentrivia.ui.screens.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 /*import androidx.compose.foundation.layout.ColumnScopeInstance.weight
@@ -10,7 +12,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +30,7 @@ import com.example.toptentrivia.R
 import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
+import com.example.toptentrivia.ui.screens.UserViewModel
 import com.example.toptentrivia.ui.theme.TopTenTriviaTheme
 
 
@@ -33,18 +39,26 @@ object HomeDestination : NavigationDestination {
     override val titleRes = R.string.home_title
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen (
-    username: String,
-    onNavigateToQuiz: (String) -> Unit,
+    onNavigateToQuiz: () -> Unit,
     onNavigateToSummary: () -> Unit,
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    userViewModel: UserViewModel,
 ) {
 
-    val user = viewModel.user.collectAsState()
+    val user = userViewModel.user.collectAsState()
 
-    LaunchedEffect(username) {
-        viewModel.loadUser(username)
+
+
+    val streakRank = remember { mutableStateOf<Int?>(null) }
+    val totalPointsRank = remember { mutableStateOf<Int?>(null) }
+    val todayPointsRank = remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(Unit) {
+        userViewModel.getUserStreakRanking { streakRank.value = it }
+        userViewModel.getUserTotalPointsRanking { totalPointsRank.value = it }
+        userViewModel.getUserTodayRanking { todayPointsRank.value = it }
     }
 
     user.value?.let { u ->
@@ -52,8 +66,11 @@ fun HomeScreen (
             HomeTopBar(u.username)
             HomeContent(
                 user = u,
-                onNavigateToQuiz = { onNavigateToQuiz(u.username) },
-                onNavigateToSummary = onNavigateToSummary
+                onNavigateToQuiz = onNavigateToQuiz,
+                onNavigateToSummary = onNavigateToSummary,
+                streakRank = streakRank,
+                totalPointsRank = totalPointsRank,
+                todayPointsRank = todayPointsRank
             )
             BottomNavBar()
         }
@@ -111,7 +128,10 @@ private fun HomeTopBar(username: String) {
 @Composable
 private fun HomeContent(
     user: User,
-    onNavigateToQuiz: (String) -> Unit,
+    streakRank: State<Int?>,
+    totalPointsRank: State<Int?>,
+    todayPointsRank: State<Int?>,
+    onNavigateToQuiz: () -> Unit,
     onNavigateToSummary: () -> Unit) {
     Box(
         modifier = Modifier
@@ -120,11 +140,11 @@ private fun HomeContent(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            StreakCard(user)
+            StreakCard(user,)
             Spacer(modifier = Modifier.height(16.dp))
-            StatsCard(user)
+            StatsCard(user,streakRank, totalPointsRank, todayPointsRank)
             Spacer(modifier = Modifier.height(24.dp))
-            PlayOrViewScoreButton(user.username, user.questionsAttemptedToday, onNavigateToQuiz, onNavigateToSummary)
+            PlayOrViewScoreButton(user.questionsAttemptedToday, onNavigateToQuiz, onNavigateToSummary)
         }
     }
 }
@@ -160,7 +180,12 @@ private fun StreakCard(user: User) {
 
 
 @Composable
-private fun StatsCard(user: User) {
+private fun StatsCard(
+    user: User,
+    streakRank: State<Int?>,
+    totalPointsRank: State<Int?>,
+    todayPointsRank: State<Int?>,
+    ) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -185,10 +210,10 @@ private fun StatsCard(user: User) {
             } else 0
             StatsRow("Accuracy:", "$accuracy%")
             StatsRow("Average Points:", user.averagePoints.toInt().toString())
-            StatsRow("Streak Percentile:", "${user.streak} days")
-//            StatsRow("Top Ten Finishes:", user.topTenFinishes.toString())
-            StatsRow("All-Time Ranking", user.gamesPlayedAllTime.toString())
-            StatsRow("Today's Ranking:", user.pointsToday.toString())
+            StatsRow("Streak Ranking:", streakRank.value?.toString() ?: "-")
+            StatsRow("Games Played:", user.gamesPlayedAllTime.toString())
+            StatsRow("All-Time Ranking:", totalPointsRank.value?.toString() ?: "...")
+            StatsRow("Today's Ranking:", todayPointsRank.value?.toString() ?: "...")
 
         }
     }
@@ -217,13 +242,12 @@ private fun StatsRow(label: String, value: String) {
 
 @Composable
 private fun PlayOrViewScoreButton(
-    username: String,
     questionsAttempted: Int,
-    onPlay: (String) -> Unit,
+    onPlay: () -> Unit,
     onViewScore: () -> Unit
 ) {
     val (label, action) = if (questionsAttempted in -1..9) {
-        "Play" to { onPlay(username) }
+        "Play" to onPlay
     } else {
         "View Score" to onViewScore
     }

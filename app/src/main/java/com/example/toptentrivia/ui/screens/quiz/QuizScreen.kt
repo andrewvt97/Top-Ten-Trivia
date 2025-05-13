@@ -26,23 +26,26 @@ import com.example.toptentrivia.R
 import com.example.toptentrivia.network.model.TriviaQuestions
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
+import com.example.toptentrivia.ui.screens.UserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 object QuizDestination : NavigationDestination {
     override val route = "quiz"
     override val titleRes = R.string.quiz_title
-    override fun createRoute(username: String) = "quiz/$username"
 }
 
 @Composable
 fun QuizScreen(
     navController: NavController,
-    username: String,
+    userViewModel: UserViewModel,
     viewModel: QuizViewModel
 ) {
-    LaunchedEffect(username) {
-        viewModel.loadUser(username)
+
+    val user = userViewModel.user.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getTrivia(userViewModel)
     }
 
     val quizUiState = viewModel.quizUiState
@@ -57,7 +60,7 @@ fun QuizScreen(
         is QuizUiState.Success -> {
             val questions = (quizUiState).questions
 
-            QuizContent(navController, viewModel, questions)
+            QuizContent(navController, viewModel, userViewModel, questions)
         }
     }
 }
@@ -66,6 +69,7 @@ fun QuizScreen(
 fun QuizContent(
     navController: NavController,
     viewModel: QuizViewModel,
+    userViewModel: UserViewModel,
     questions: List<TriviaQuestions>
 ) {
     val scope = rememberCoroutineScope()
@@ -90,7 +94,7 @@ fun QuizContent(
 
     LaunchedEffect(currentIndex, answeredQuestion) {
         if (!answeredQuestion) {
-            viewModel.startTimer()
+            viewModel.startTimer(userViewModel)
         }
     }
 
@@ -236,18 +240,20 @@ fun QuizContent(
                 // end of quiz behavior
                 if (answeredQuestion) {
                     if (currentIndex < questions.size - 1) {
-                        viewModel.moveToNextQuestion()
+                        viewModel.moveToNextQuestion(userViewModel)
                     } else {
+                        userViewModel.updateAverage()
                         navController.navigate("summary")
                     }
                 } else if (selectedOption != -1) { // check selectedOption
-                    viewModel.answerQuestion()
+                    viewModel.answerQuestion(userViewModel)
 
                     scope.launch {
                         delay(1000)
                         if (currentIndex < questions.size - 1) {
-                            viewModel.moveToNextQuestion()
+                            viewModel.moveToNextQuestion(userViewModel)
                         } else {
+                            userViewModel.updateAverage()
                             navController.navigate("summary")
                         }
                     }

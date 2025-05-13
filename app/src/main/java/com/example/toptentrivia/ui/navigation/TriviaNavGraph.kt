@@ -1,6 +1,8 @@
 package com.example.toptentrivia.ui.navigation
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -8,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.toptentrivia.ui.AppViewModelProvider
+import com.example.toptentrivia.ui.screens.UserViewModel
 import com.example.toptentrivia.ui.screens.home.HomeDestination
 import com.example.toptentrivia.ui.screens.home.HomeScreen
 import com.example.toptentrivia.ui.screens.login.LoginDestination
@@ -21,6 +24,7 @@ import com.example.toptentrivia.ui.screens.signup.SignUpDestination
 import com.example.toptentrivia.ui.screens.signup.SignUpScreen
 
 //handles navigation of entire app
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TriviaNavHost(
     navController: NavHostController,
@@ -31,72 +35,59 @@ fun TriviaNavHost(
         // .Factory creates and retrieves instance via Compose MAGIC
         factory = AppViewModelProvider.Factory
     )
+    val userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory)
 
     NavHost(
         navController = navController,
         startDestination = LoginDestination.route,
         modifier = modifier
     ) {
-//        composable(route = LoginDestination.route) {
-//            LoginScreen(
-//                navigateToSignUp = { navController.navigate(SignUpDestination.route) },
-//                navigateToHome = {
-//                    navController.navigate(HomeDestination.route) {
-//                        popUpTo(LoginDestination.route) { inclusive = true }
-//                    }
-//                }
-//            )
-//        }
+
         composable(route = LoginDestination.route) {
             LoginScreen(
+                userViewModel = userViewModel,
                 navigateToSignUp = { navController.navigate(SignUpDestination.route) },
-                navigateToHome = { username ->
-                    navController.navigate(HomeDestination.createRoute(username)) {
-                        popUpTo(LoginDestination.route) { inclusive = true }
-                    }
-                }
-            )
-        }
-        composable(route = SignUpDestination.route) {
-            SignUpScreen(
-                navigateToLogin = { navController.navigate(LoginDestination.route) },
-                navigateToHome = { username ->
-                    navController.navigate(HomeDestination.createRoute(username)) {
-                        popUpTo(SignUpDestination.route) { inclusive = true }
-                    }
+                navigateToHome = {
+                    navController.navigate(HomeDestination.route)
                 }
             )
         }
 
-        composable(route = "home/{username}") { backStackEntry ->
-            val username = backStackEntry.arguments?.getString("username") ?: return@composable
+        composable(route = SignUpDestination.route) {
+            SignUpScreen(
+                userViewModel = userViewModel,
+                navigateToLogin = { navController.navigate(LoginDestination.route) },
+                navigateToHome = {
+                    navController.navigate(HomeDestination.route)
+                }
+            )
+        }
+
+
+        composable(route = HomeDestination.route) {
             HomeScreen(
-                username = username,
-                onNavigateToQuiz = { username ->
-                    navController.navigate(QuizDestination.createRoute(username))
-                },
+                userViewModel = userViewModel,
+                onNavigateToQuiz = { navController.navigate(QuizDestination.route) },
                 onNavigateToSummary = { navController.navigate(SummaryDestination.route) }
             )
         }
-//        composable(route = QuizDestination.route) {
-//            QuizScreen(
-//                navController = navController,
-//                viewModel = quizViewModel
-//            )
-//        }
-        composable(route = "quiz/{username}") { backStackEntry ->
-            val username = backStackEntry.arguments?.getString("username") ?: return@composable
+
+
+        composable(route = QuizDestination.route) {
             QuizScreen(
                 navController = navController,
                 viewModel = quizViewModel,
-                username = username
+                userViewModel = userViewModel
             )
         }
+
         composable(route = SummaryDestination.route) {
             SummaryScreen(
                 navController = navController,
-                viewModel = quizViewModel
+                viewModel = quizViewModel,
+                userViewModel = userViewModel
             )
         }
+
     }
 }

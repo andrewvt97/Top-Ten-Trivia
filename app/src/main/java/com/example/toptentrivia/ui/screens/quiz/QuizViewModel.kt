@@ -14,6 +14,7 @@ import com.example.toptentrivia.data.TriviaRepository
 import com.example.toptentrivia.data.UserRepository
 import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.network.model.TriviaQuestions
+import com.example.toptentrivia.ui.screens.UserViewModel
 import kotlinx.coroutines.launch
 
 sealed interface QuizUiState {
@@ -24,18 +25,9 @@ sealed interface QuizUiState {
 
 class QuizViewModel(
     private val triviaRepository: TriviaRepository,
-    private val userRepository: UserRepository
 ) : ViewModel() {
 
-    var user by mutableStateOf<User?>(null)
-        private set
 
-    fun loadUser(username: String) {
-        viewModelScope.launch {
-            user = userRepository.getUserByUsername(username)
-            getTrivia()
-        }
-    }
 
     private var countDownTimer: CountDownTimer? = null
     private val _remainingTime = mutableStateOf(10.0f)
@@ -62,7 +54,7 @@ class QuizViewModel(
 //    }
 
     //
-    private fun getTrivia() {
+    fun getTrivia(userViewModel: UserViewModel) {
         // Launches a coroutine within the ViewModel’s lifecycle scope
         viewModelScope.launch {
             quizUiState = QuizUiState.Loading
@@ -71,11 +63,7 @@ class QuizViewModel(
                 if (triviaQuestions.isNotEmpty()) {
                     quizUiState = QuizUiState.Success(triviaQuestions) //load questions from repo
                     shuffleOptionList()
-                    val u = user ?: return@launch
-                    if (u.questionsAttemptedToday == 0) {
-                        u.gamesPlayedAllTime += 1
-                    }
-                    incrementAttempt()
+                    userViewModel.incrementOnGameStart()
 
                 } else {
                     quizUiState = QuizUiState.Error
@@ -112,7 +100,7 @@ class QuizViewModel(
         }
     }
 
-    fun answerQuestion() {
+    fun answerQuestion(userViewModel: UserViewModel) {
         // can cast quizUiState to Success? if yes{ did cast succeed?: yes(can do ".questions")}
 
         val questions = (quizUiState as? QuizUiState.Success)?.questions
@@ -129,7 +117,7 @@ class QuizViewModel(
                 if (selected == correct) {
                     score.value += 10
                     correctAnswers.value += 1
-                    incrementScore(10.0) // change this to timed answer later
+                    userViewModel.incrementScore(10.0) // change this to timed answer later
 
                     println("Correct Answers: " + correctAnswers.value)
                 }
@@ -137,11 +125,11 @@ class QuizViewModel(
         }
     }
 
-    fun moveToNextQuestion() {
+    fun moveToNextQuestion(userViewModel: UserViewModel) {
         val questions = (quizUiState as? QuizUiState.Success)?.questions
 
         if (questions != null && currentQuestionIndex.value < questions.size - 1) {
-            incrementAttempt()
+            userViewModel.incrementAttempt()
             currentQuestionIndex.value += 1
             selectedOption.value = -1
             answeredCurrentQuestion.value = false
@@ -149,24 +137,11 @@ class QuizViewModel(
         shuffleOptionList()
     }
 
-    private fun incrementScore(score:Double){
-        val u = user ?: return
 
-        u.pointsToday += score // change when score is updated based on time
-        u.correctAnswersToday += 1
-        u.correctAnswersAllTime += 1
-        viewModelScope.launch { userRepository.updateUser(u) }
-    }
 
-    private fun incrementAttempt(){
-        val u = user ?: return
 
-        u.questionsAttemptedToday += 1
-        u.questionsAttemptedAllTime += 1
-        viewModelScope.launch { userRepository.updateUser(u) }
-    }
 
-    fun startTimer() {
+    fun startTimer(userViewModel: UserViewModel) {
 
 
         _remainingTime.value = 10.0f
@@ -180,23 +155,13 @@ class QuizViewModel(
             override fun onFinish() {
                 _remainingTime.value = 0f
                 if (!answeredCurrentQuestion.value) {
-                    answerQuestion()
+                    answerQuestion(userViewModel)
                 }
             }
         }.start()
     }
 
-    fun updateAverage(){
-        val user = user ?: return
-        if (user.questionsAttemptedToday == 10) {
-            val newAverage = ((user.averagePoints * (user.gamesPlayedAllTime-1)) + user.pointsToday) / user.gamesPlayedAllTime
-            user.averagePoints = newAverage
-            viewModelScope.launch {
-                userRepository.updateUser(user)
-            }
-        }
 
-    }
 
     fun resetQuiz(){
         println("Correct Answers: " + correctAnswers.value)

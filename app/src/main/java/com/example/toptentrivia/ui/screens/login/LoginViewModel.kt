@@ -3,6 +3,7 @@ package com.example.toptentrivia.ui.screens.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.toptentrivia.data.UserRepository
+import com.example.toptentrivia.ui.screens.UserViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -10,7 +11,7 @@ import kotlinx.coroutines.launch
 
 
 class LoginViewModel(
-    private val userRepository: UserRepository
+    private val userViewModel: UserViewModel
 ) : ViewModel() {
 
     private val _loginUiState = MutableStateFlow(LoginUiState())
@@ -35,7 +36,7 @@ class LoginViewModel(
 
         viewModelScope.launch {
             try {
-                val result = userRepository.loginUser(state.username, state.password)
+                val result = userViewModel.loginUser(state.username, state.password)
 
                 if (result.isSuccess) {
                     _loginUiState.update { it.copy(isLoading = false, loginSuccessful = true) }

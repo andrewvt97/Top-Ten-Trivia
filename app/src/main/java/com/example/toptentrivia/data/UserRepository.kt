@@ -10,6 +10,10 @@ interface UserRepository {
     suspend fun getUserByUsername(username: String): User?
     suspend fun getUserByEmail(email: String): User?
     suspend fun updateUser(user: User)
+
+    suspend fun getActiveUsersByStreak(today: String, yesterday: String): List<User>
+    suspend fun getUsersByTotalPoints(): List<User>
+    suspend fun getUsersByPointsToday(today: String): List<User>
 }
 
 class OfflineUserRepository(private val userDao: UserDao) : UserRepository {
@@ -39,4 +43,16 @@ class OfflineUserRepository(private val userDao: UserDao) : UserRepository {
         userDao.getUserByEmail(email)
 
     override suspend fun updateUser(user: User) = userDao.updateUser(user)
+
+    override suspend fun getActiveUsersByStreak(today: String, yesterday: String): List<User> {
+        return userDao.getActiveUsersByStreak(today, yesterday)
+    }
+
+    override suspend fun getUsersByTotalPoints(): List<User> {
+        return userDao.getUsersByTotalPoints()
+    }
+
+    override suspend fun getUsersByPointsToday(today: String): List<User> {
+        return userDao.getUsersByPointsToday(today)
+    }
 }

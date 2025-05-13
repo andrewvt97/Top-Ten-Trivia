@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.toptentrivia.data.UserRepository
 import com.example.toptentrivia.data.model.User
+import com.example.toptentrivia.ui.screens.UserViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -14,7 +15,7 @@ import java.util.Date
 import java.util.Locale
 
 class SignUpViewModel (
-    private val userRepository: UserRepository
+    private val userViewModel: UserViewModel
 ): ViewModel() {
     private val _signUpUiState = MutableStateFlow(SignUpUiState())
     val signUpUiState: StateFlow<SignUpUiState> = _signUpUiState
@@ -49,7 +50,7 @@ class SignUpViewModel (
                 password = state.password,
             )
             try {
-                val result = userRepository.registerUser(newUser)
+                val result = userViewModel.registerUser(newUser)
                 if (result.isSuccess) {
                     _signUpUiState.update { it.copy(isLoading = false, errorMessage = null, signUpSuccessful = true) }
                 } else {
