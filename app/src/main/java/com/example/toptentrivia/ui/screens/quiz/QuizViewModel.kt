@@ -2,6 +2,7 @@ package com.example.toptentrivia.ui.screens.quiz
 
 import android.os.CountDownTimer
 import android.text.Html
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -74,6 +75,7 @@ class QuizViewModel(
                 }
             } catch (e: Exception) {
                 quizUiState = QuizUiState.Error
+                Log.e("TriviaViewModel", "Failed to fetch trivia: ${e.localizedMessage}")
             }
         }
     }
@@ -120,6 +122,9 @@ class QuizViewModel(
                 if (selected == correct) {
                     score.value += 10
                     correctAnswers.value += 1
+                    u.pointsToday += 10 // change when score is updated based on time
+                    u.correctAnswersToday += 1
+                    u.correctAnswersAllTime += 1
                     println("Correct Answers: " + correctAnswers.value)
                 }
             }
@@ -128,6 +133,16 @@ class QuizViewModel(
 
     fun moveToNextQuestion() {
         val questions = (quizUiState as? QuizUiState.Success)?.questions
+
+        val u = user ?: return
+
+        if (u.questionsAttemptedToday == 0) {
+            u.gamesPlayedAllTime += 1
+        }
+        u.questionsAttemptedToday += 1
+        u.questionsAttemptedAllTime += 1
+        viewModelScope.launch { userRepository.updateUser(u) }
+
         if (questions != null && currentQuestionIndex.value < questions.size - 1) {
             currentQuestionIndex.value += 1
             selectedOption.value = -1
@@ -140,13 +155,7 @@ class QuizViewModel(
         _remainingTime.value = 10.0f
         countDownTimer?.cancel()
 
-        user?.let {
-            if (it.questionsAttemptedToday in -1..9) {
-                it.questionsAttemptedToday += 1
-                it.questionsAttemptedAllTime += 1
-                viewModelScope.launch { userRepository.updateUser(it) }
-            }
-        }
+
 
         countDownTimer = object : CountDownTimer(10000, 100) {
             override fun onTick(millisUntilFinished: Long) {
