@@ -73,12 +73,13 @@ class QuizViewModel(
             val selected = options[selectedOption.value]
             if (selected == correct) {
                 val timeLeft = remainingTime.value
-                val points = when {
+                val points = timeLeft * 10
+                /*val points = when {
                     timeLeft > 5f -> 25
                     timeLeft > 0f -> 15
                     else -> 10
-                }
-                score.value += points
+                }*/
+                score.value += points.toInt()
                 correctAnswers.value += 1
             }
         }
