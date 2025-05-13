@@ -47,7 +47,6 @@ class SignUpViewModel (
                 email = state.email,
                 username = state.username,
                 password = state.password,
-                lastVisitDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
             )
             try {
                 val result = userRepository.registerUser(newUser)

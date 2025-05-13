@@ -1,5 +1,6 @@
 package com.example.toptentrivia.ui.screens.quiz
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.toptentrivia.R
+import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
 import com.example.toptentrivia.ui.screens.quiz.QuizUiState
@@ -30,14 +32,34 @@ fun SummaryScreen(
     navController: NavController,
      viewModel: QuizViewModel
 ) {
-    val score = viewModel.score.value
-    val correctAnswers = viewModel.correctAnswers.value
-    val quizUiState = viewModel.quizUiState
+    val user = viewModel.user
+//    val score = viewModel.score.value
+//    val correctAnswers = viewModel.correctAnswers.value
+//    val totalQuestions = when (quizUiState) {
+//        is QuizUiState.Success -> quizUiState.questions.size
+//        else -> 0
+//    }
+    when {
+        user == null -> {
+            // While user is still loading
+            LoadingScreen()
+        }
 
-    val totalQuestions = when (quizUiState) {
-        is QuizUiState.Success -> quizUiState.questions.size
-        else -> 0
+        else -> {
+            viewModel.updateAverage()
+
+            SummaryContent(user)
+        }
+
+
     }
+}
+
+@Composable
+fun SummaryContent(user:User) {
+    val score = user.pointsToday
+    val correctAnswers = user.correctAnswersToday
+    val totalQuestions = user.questionsAttemptedToday
 
     Column(
         modifier = Modifier
@@ -70,19 +92,19 @@ fun SummaryScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        Button(
-            onClick = {
-                viewModel.resetQuiz()
-                navController.navigate("quiz") {
-                    popUpTo("quiz") { inclusive = true }
-                }
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF00416A)
-            ),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Text("Start New Quiz", fontSize = 16.sp)
+//            Button(
+//                onClick = {
+//                    viewModel.resetQuiz()
+//                    navController.navigate("quiz") {
+//                        popUpTo("quiz") { inclusive = true }
+//                    }
+//                },
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = Color(0xFF00416A)
+//                ),
+//                shape = RoundedCornerShape(8.dp)
+//            ) {
+//                Text("Start New Quiz", fontSize = 16.sp)
+//            }
         }
     }
-}

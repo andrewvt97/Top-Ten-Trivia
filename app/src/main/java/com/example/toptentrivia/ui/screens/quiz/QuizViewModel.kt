@@ -33,6 +33,7 @@ class QuizViewModel(
     fun loadUser(username: String) {
         viewModelScope.launch {
             user = userRepository.getUserByUsername(username)
+            getTrivia()
         }
     }
 
@@ -56,9 +57,9 @@ class QuizViewModel(
 
     )
 
-    init {
-        getTrivia()
-    }
+//    init {
+//        getTrivia()
+//    }
 
     //
     private fun getTrivia() {
@@ -70,6 +71,12 @@ class QuizViewModel(
                 if (triviaQuestions.isNotEmpty()) {
                     quizUiState = QuizUiState.Success(triviaQuestions) //load questions from repo
                     shuffleOptionList()
+                    val u = user ?: return@launch
+                    if (u.questionsAttemptedToday == 0) {
+                        u.gamesPlayedAllTime += 1
+                    }
+                    incrementAttempt()
+
                 } else {
                     quizUiState = QuizUiState.Error
                 }
@@ -109,7 +116,7 @@ class QuizViewModel(
         // can cast quizUiState to Success? if yes{ did cast succeed?: yes(can do ".questions")}
 
         val questions = (quizUiState as? QuizUiState.Success)?.questions
-        val u = user ?: return
+
 
         if (questions != null && currentQuestionIndex.value < questions.size) {
             val current = questions[currentQuestionIndex.value]
@@ -122,9 +129,8 @@ class QuizViewModel(
                 if (selected == correct) {
                     score.value += 10
                     correctAnswers.value += 1
-                    u.pointsToday += 10 // change when score is updated based on time
-                    u.correctAnswersToday += 1
-                    u.correctAnswersAllTime += 1
+                    incrementScore(10.0) // change this to timed answer later
+
                     println("Correct Answers: " + correctAnswers.value)
                 }
             }
@@ -134,16 +140,8 @@ class QuizViewModel(
     fun moveToNextQuestion() {
         val questions = (quizUiState as? QuizUiState.Success)?.questions
 
-        val u = user ?: return
-
-        if (u.questionsAttemptedToday == 0) {
-            u.gamesPlayedAllTime += 1
-        }
-        u.questionsAttemptedToday += 1
-        u.questionsAttemptedAllTime += 1
-        viewModelScope.launch { userRepository.updateUser(u) }
-
         if (questions != null && currentQuestionIndex.value < questions.size - 1) {
+            incrementAttempt()
             currentQuestionIndex.value += 1
             selectedOption.value = -1
             answeredCurrentQuestion.value = false
@@ -151,11 +149,28 @@ class QuizViewModel(
         shuffleOptionList()
     }
 
+    private fun incrementScore(score:Double){
+        val u = user ?: return
+
+        u.pointsToday += score // change when score is updated based on time
+        u.correctAnswersToday += 1
+        u.correctAnswersAllTime += 1
+        viewModelScope.launch { userRepository.updateUser(u) }
+    }
+
+    private fun incrementAttempt(){
+        val u = user ?: return
+
+        u.questionsAttemptedToday += 1
+        u.questionsAttemptedAllTime += 1
+        viewModelScope.launch { userRepository.updateUser(u) }
+    }
+
     fun startTimer() {
+
+
         _remainingTime.value = 10.0f
         countDownTimer?.cancel()
-
-
 
         countDownTimer = object : CountDownTimer(10000, 100) {
             override fun onTick(millisUntilFinished: Long) {
@@ -169,6 +184,18 @@ class QuizViewModel(
                 }
             }
         }.start()
+    }
+
+    fun updateAverage(){
+        val user = user ?: return
+        if (user.questionsAttemptedToday == 10) {
+            val newAverage = ((user.averagePoints * (user.gamesPlayedAllTime-1)) + user.pointsToday) / user.gamesPlayedAllTime
+            user.averagePoints = newAverage
+            viewModelScope.launch {
+                userRepository.updateUser(user)
+            }
+        }
+
     }
 
     fun resetQuiz(){

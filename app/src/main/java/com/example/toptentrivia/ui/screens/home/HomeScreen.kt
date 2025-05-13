@@ -59,17 +59,6 @@ fun HomeScreen (
         }
     }
 
-//    Column(
-//        modifier = Modifier.fillMaxSize()
-//    ) {
-//        HomeTopBar(username)
-//
-//        // Content
-//        HomeContent()
-//
-//        // Bottom Navigation
-//        BottomNavBar()
-//    }
 }
 
 @Composable
@@ -117,33 +106,7 @@ private fun HomeTopBar(username: String) {
     }
 }
 
-//@Composable
-//private fun HomeContent() {
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(16.dp),
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Column(
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            // Streak Card
-//            StreakCard()
-//
-//            Spacer(modifier = Modifier.height(16.dp))
-//
-//            // Stats Card
-//            StatsCard()
-//
-//            Spacer(modifier = Modifier.height(24.dp))
-//
-//            // Play Button
-//            PlayButton()
-//        }
-//    }
-//}
+
 
 @Composable
 private fun HomeContent(
@@ -277,28 +240,6 @@ private fun PlayOrViewScoreButton(
     }
 }
 
-//@Composable
-//private fun PlayButton() {
-//    Button(
-//        onClick = {
-//            // TODO: Navigation to game screen would be implemented here
-//        },
-//        shape = RoundedCornerShape(8.dp),
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = Color(0xFF0A2742)
-//        ),
-//        modifier = Modifier
-//            .fillMaxWidth(0.5f)
-//            .height(48.dp)
-//    ) {
-//        Text(
-//            text = "Play",
-//            color = Color.White,
-//            fontSize = 16.sp,
-//            fontWeight = FontWeight.Bold
-//        )
-//    }
-//}
 
 
 @Composable
