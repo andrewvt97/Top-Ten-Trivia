@@ -224,9 +224,16 @@ fun QuizContent(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "${index + 1}.)",
+                            text = when (index) {
+                                0->"A"
+                                1->"B"
+                                2->"C"
+                                3->"D"
+                                else -> "index not found"
+                            },
                             color = textColor,
                             fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
                         )
                         Box(
                             modifier = Modifier
