@@ -152,10 +152,11 @@ private fun SummaryContent(
                     onClick = onPrevious,
                     modifier = Modifier.size(48.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = "Previous Question",
-                        modifier = Modifier.size(32.dp)
+                    if (currentIndex==0){}
+                    else Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    contentDescription = "Previous Question",
+                    modifier = Modifier.size(32.dp)
                     )
                 }
 
@@ -252,7 +253,8 @@ private fun SummaryContent(
                 }
 
                 // Right navigation button
-                IconButton(
+                if(currentIndex == questions.size-1){}
+                else IconButton(
                     onClick = onNext,
                     modifier = Modifier.size(48.dp)
                 ) {
