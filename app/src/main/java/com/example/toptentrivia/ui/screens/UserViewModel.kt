@@ -155,4 +155,17 @@ class UserViewModel(
             callback(rank)
         }
     }
+    //leaderboard top performers
+    private val _topUsersToday = MutableStateFlow<List<User>>(emptyList())
+    val topUsersToday: StateFlow<List<User>> = _topUsersToday
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun fetchTopUsersToday() {
+        val today = LocalDate.now().toString()
+        viewModelScope.launch {
+            val users = userRepository.getUsersByPointsToday(today)
+            _topUsersToday.value = users
+        }
+    }
+
 }
