@@ -64,8 +64,9 @@ class QuizViewModel(
                     return@launch
                 }
 
-                // ✅ Capture starting value
+                // ✅ Capture starting attempts and points
                 startingAttempts = user.questionsAttemptedToday
+                score.value = user.pointsToday.toInt() // initialize score from stored value
 
                 val triviaQuestions = triviaRepository.getTriviaQuestions(remainingQuestions)
                 if (triviaQuestions.isNotEmpty()) {
@@ -80,6 +81,7 @@ class QuizViewModel(
             }
         }
     }
+
 
 
 
