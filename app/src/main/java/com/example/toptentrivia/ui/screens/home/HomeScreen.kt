@@ -26,11 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.toptentrivia.R
 import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
 import com.example.toptentrivia.ui.screens.UserViewModel
+import com.example.toptentrivia.ui.screens.navbar.BottomNavBar
 import com.example.toptentrivia.ui.theme.TopTenTriviaTheme
 
 
@@ -72,7 +74,6 @@ fun HomeScreen (
                 totalPointsRank = totalPointsRank,
                 todayPointsRank = todayPointsRank
             )
-            BottomNavBar()
         }
     }
 
@@ -113,7 +114,7 @@ private fun HomeTopBar(username: String) {
                     .background(Color.White.copy(alpha = 0.3f))
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.default_profile_icon),
+                    painter = painterResource(id = R.drawable.profile_picture),
                     contentDescription = "Profile",
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
@@ -266,19 +267,19 @@ private fun PlayOrViewScoreButton(
 
 
 
-@Composable
-fun BottomNavBar() {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(12.dp)
-    ) {
-        /*NavBarItem(R.drawable.ic_home, "Home", true)
-        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
-    } }
+//@Composable
+//fun BottomNavBar() {
+//    Row(
+//        horizontalArrangement = Arrangement.SpaceEvenly,
+//        verticalAlignment = Alignment.CenterVertically,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .background(Color.White)
+//            .padding(12.dp)
+//    ) {
+//        /*NavBarItem(R.drawable.ic_home, "Home", true)
+//        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
+//    } }
 
 @Composable
 fun NavBarItem(iconRes: Int, label: String, isSelected: Boolean) {

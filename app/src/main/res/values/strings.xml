@@ -3,6 +3,7 @@
     <string name="leaderboard_title">Leaderboard</string>
 
     <string name="login_title">Login</string>
+    <string name="logout_title">Logout</string>
     <string name="signup_title">Sign Up</string>
     <string name="enter_username">Enter Username</string>
     <string name="enter_password">Enter Password</string>

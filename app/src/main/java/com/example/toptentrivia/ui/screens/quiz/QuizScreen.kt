@@ -301,8 +301,13 @@ fun QuizContent(
                     if (currentIndex < questions.size - 1) {
                         viewModel.moveToNextQuestion(userViewModel)
                     } else {
-                        userViewModel.updateAverage()
-                        navController.navigate("summary")
+
+                        scope.launch {
+                            delay(300) // wait for Room state to update
+                            userViewModel.updateAverage()
+                            navController.navigate("summary")
+                        }
+
                     }
 
                 } else if (selectedOption != -1) { // check selectedOption
@@ -314,6 +319,7 @@ fun QuizContent(
                         if (currentIndex < questions.size - 1) {
                             viewModel.moveToNextQuestion(userViewModel)
                         } else {
+                            delay(300) // wait for Room state to update
                             userViewModel.updateAverage()
                             navController.navigate("summary")
                         }

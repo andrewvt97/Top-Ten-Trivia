@@ -1,6 +1,7 @@
 package com.example.toptentrivia.ui.screens.quiz
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -24,6 +25,7 @@ import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
 import com.example.toptentrivia.ui.screens.UserViewModel
+import com.example.toptentrivia.ui.screens.navbar.BottomNavBar
 import com.example.toptentrivia.ui.screens.quiz.QuizUiState
 import com.example.toptentrivia.ui.screens.quiz.QuizViewModel
 
@@ -38,57 +40,73 @@ fun SummaryScreen(
     viewModel: QuizViewModel,
     userViewModel: UserViewModel
 ) {
-//    val user = viewModel.user
-//    val quizUiState = viewModel.quizUiState
-//    val score = viewModel.score.value
-//    val correctAnswers = viewModel.correctAnswers.value
-//    val totalQuestions = when (quizUiState) {
-//        is QuizUiState.Success -> quizUiState.questions.size
-//        else -> 0
-//    }
-
     val user = userViewModel.user.collectAsState().value
     val correctAnswers = user?.correctAnswersToday ?: 0
-
     val score = user?.pointsToday?.toInt() ?: 0
     val totalQuestions = user?.questionsAttemptedToday ?: 0
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(bottom = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Quiz Completed!",
-            style = TextStyle(
+        /* ---------- TOP NAVBAR ---------- */
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF0A2742))
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Top Ten Trivia",
+                color = Color.White,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
 
-        Text(
-            text = "You answered $correctAnswers out of $totalQuestions questions correctly.",
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        /* ---------- SUMMARY CONTENT ---------- */
+        if (totalQuestions == 0) {
+            Text(
+                text = "You haven't taken the quiz today!",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                color = Color(0xFF00416A),
+                modifier = Modifier.padding(32.dp)
+            )
+        } else {
+            Text(
+                text = "Quiz Completed!",
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
 
-        Text(
-            text = "Final Score: $score",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF00416A),
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
+            Text(
+                text = "You answered $correctAnswers out of $totalQuestions questions correctly.",
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Text(
+                text = "Final Score: $score",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF00416A),
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
 
             Button(
                 onClick = {
-                    viewModel.resetQuiz(userViewModel)
                     navController.navigate("leaderboard") {
-                        popUpTo("leaderboard") { inclusive = true }
+                        popUpTo("summary") { inclusive = true }
+                        launchSingleTop = true
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -98,19 +116,11 @@ fun SummaryScreen(
             ) {
                 Text("Leaderboard", fontSize = 16.sp)
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
         }
-        Spacer(modifier = Modifier.height(12.dp))
-
-//        Button(
-//            onClick = {
-//                navController.navigate("leaderboard")
-//            },
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = Color(0xFF00416A)
-//            ),
-//            shape = RoundedCornerShape(8.dp)
-//        ) {
-//            Text("View Leaderboard", fontSize = 16.sp)
-//        }
-
     }
+
+
+}
+

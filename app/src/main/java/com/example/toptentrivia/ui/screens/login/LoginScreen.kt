@@ -3,6 +3,7 @@ package com.example.toptentrivia.ui.screens.login
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -10,7 +11,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -63,7 +66,11 @@ fun LoginScreen(
             value = uiState.value.username,
             onValueChange = { viewModel.onUsernameChange(it) },
             label = { Text("Enter Username") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -73,7 +80,17 @@ fun LoginScreen(
             onValueChange = { viewModel.onPasswordChange(it) },
             label = { Text("Enter Password") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    viewModel.login()
+                }
+            )
         )
 
         Spacer(modifier = Modifier.height(24.dp))
