@@ -136,11 +136,15 @@ fun QuizContent(
             //Spacer(modifier = Modifier.width(2.dp))
 
             // progress text
+            val progress = viewModel.startingAttempts + currentIndex + 1
+//hj
             Text(
-                text = "${currentIndex + 1}/${questions.size}",
+                text = "$progress/10",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
+
+
 
             Spacer(modifier = Modifier.width(10.dp))
 
