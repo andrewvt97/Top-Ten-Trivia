@@ -122,7 +122,7 @@ private fun HomeTopBar(username: String) {
                     .background(Color.White.copy(alpha = 0.3f))
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.profile_picture),
+                    painter = painterResource(id = R.drawable.default_pfp_blue),
                     contentDescription = "Profile",
                     tint = Color.White,
                     modifier = Modifier.size(44.dp)
