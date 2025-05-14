@@ -50,7 +50,7 @@ fun LeaderboardScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(blue)
+                .background(Color(0xFF0A2742))
                 .padding(vertical = 16.dp)
         ) {
             Column(
@@ -197,4 +197,3 @@ fun PodiumProfile(user: com.example.toptentrivia.data.model.User, rank: Int) {
         )
     }
 }
-

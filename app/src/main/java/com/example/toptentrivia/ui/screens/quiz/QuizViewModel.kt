@@ -156,17 +156,17 @@ class QuizViewModel(
     }
 
 
-    fun resetQuiz(userViewModel: UserViewModel) {
-
-        countDownTimer?.cancel()
-        currentQuestionIndex.value = 0
-        selectedOption.value = -1
-        answeredCurrentQuestion.value = false
-        score.value = 0
-        correctAnswers.value = 0
-        _remainingTime.value = 10.0f
-        getTrivia(userViewModel)
-    }
+//    fun resetQuiz(userViewModel: UserViewModel) {
+//
+//        countDownTimer?.cancel()
+//        currentQuestionIndex.value = 0
+//        selectedOption.value = -1
+//        answeredCurrentQuestion.value = false
+//        score.value = 0
+//        correctAnswers.value = 0
+//        _remainingTime.value = 10.0f
+//        getTrivia(userViewModel)
+//    }
 
 
 }

@@ -3,6 +3,7 @@ package com.example.toptentrivia.ui.screens.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 /*import androidx.compose.foundation.layout.ColumnScopeInstance.weight
@@ -19,18 +20,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.toptentrivia.R
 import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.ui.AppViewModelProvider
 import com.example.toptentrivia.ui.navigation.NavigationDestination
 import com.example.toptentrivia.ui.screens.UserViewModel
+import com.example.toptentrivia.ui.screens.navbar.BottomNavBar
 import com.example.toptentrivia.ui.theme.TopTenTriviaTheme
 
 
@@ -72,7 +79,6 @@ fun HomeScreen (
                 totalPointsRank = totalPointsRank,
                 todayPointsRank = todayPointsRank
             )
-            BottomNavBar()
         }
     }
 
@@ -84,7 +90,7 @@ private fun HomeTopBar(username: String) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFF0A2742))
-            .padding(16.dp)
+            .padding(vertical = 28.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -93,30 +99,33 @@ private fun HomeTopBar(username: String) {
             Text(
                 text = "Top Ten Trivia",
                 color = Color.White,
-                fontSize = 24.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = "Welcome back, $username!",
                 color = Color.White,
                 fontSize = 14.sp
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Profile avatar
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(68.dp)
                     .clip(CircleShape)
                     .background(Color.White.copy(alpha = 0.3f))
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.default_profile_icon),
+                    painter = painterResource(id = R.drawable.default_pfp_blue),
                     contentDescription = "Profile",
                     tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(44.dp)
                 )
             }
         }
@@ -151,27 +160,42 @@ private fun HomeContent(
 
 @Composable
 private fun StreakCard(user: User) {
+    val cornerRadiusPx = with(LocalDensity.current) { 12.dp.toPx() }
     Card(
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
+            .drawBehind {
+                // First draw the shadow shape
+                translate(left = 2.dp.toPx(), top = 4.dp.toPx()) {
+                    drawRoundRect(
+                        color = Color.LightGray,
+                        cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                        size = size
+                    )
+                }
+            },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(16.dp)
         ) {
-            Icon(
+            Image(
                 painter = painterResource(id = R.drawable.fire__1_),
                 contentDescription = "Streak",
-                tint = Color(0xFFFF7700),
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier
+                    .size(50.dp)
+                //.padding(end = 8.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = "${user.streak} Days",
-                fontSize = 18.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -259,6 +283,15 @@ private fun PlayOrViewScoreButton(
         modifier = Modifier
             .fillMaxWidth(0.5f)
             .height(48.dp)
+            .drawBehind {
+                translate(left = 2.dp.toPx(), top = 3.dp.toPx()) {
+                    drawRoundRect(
+                        color = Color.LightGray,
+                        cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx()),
+                        size = size
+                    )
+                }
+            }
     ) {
         Text(text = label, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
     }
@@ -266,19 +299,19 @@ private fun PlayOrViewScoreButton(
 
 
 
-@Composable
-fun BottomNavBar() {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(12.dp)
-    ) {
-        /*NavBarItem(R.drawable.ic_home, "Home", true)
-        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
-    } }
+//@Composable
+//fun BottomNavBar() {
+//    Row(
+//        horizontalArrangement = Arrangement.SpaceEvenly,
+//        verticalAlignment = Alignment.CenterVertically,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .background(Color.White)
+//            .padding(12.dp)
+//    ) {
+//        /*NavBarItem(R.drawable.ic_home, "Home", true)
+//        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
+//    } }
 
 @Composable
 fun NavBarItem(iconRes: Int, label: String, isSelected: Boolean) {
