@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -136,11 +137,21 @@ fun LeaderboardScreen(
     }
 }
 
+
+
+
 @Composable
 fun PodiumProfile(user: com.example.toptentrivia.data.model.User, rank: Int) {
     val size = when (rank) {
         1 -> 90.dp
         else -> 70.dp
+    }
+
+    val borderColor = when (rank) {
+        1 -> Color(0xFFFFD700) // Gold
+        2 -> Color(0xFFC0C0C0) // Silver
+        3 -> Color(0xFFCD7F32) // Bronze
+        else -> Color.Transparent
     }
 
     Column(
@@ -150,7 +161,9 @@ fun PodiumProfile(user: com.example.toptentrivia.data.model.User, rank: Int) {
     ) {
         Card(
             shape = CircleShape,
-            modifier = Modifier.size(size),
+            modifier = Modifier
+                .size(size)
+                .border(width = 4.dp, color = borderColor, shape = CircleShape),
             colors = CardDefaults.cardColors(containerColor = Color.LightGray)
         ) {
             Image(
@@ -161,17 +174,27 @@ fun PodiumProfile(user: com.example.toptentrivia.data.model.User, rank: Int) {
                     .padding(8.dp)
             )
         }
+
         Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = rank.toString(),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Black
+        )
+
         Text(
             text = user.username,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
         )
+
         Text(
-            text = "${user.pointsToday.toInt()} pts",
+            text = "${user.pointsToday.toInt()}",
             fontSize = 12.sp,
             color = Color.White
         )
     }
 }
+
