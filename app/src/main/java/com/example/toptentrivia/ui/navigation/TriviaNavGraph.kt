@@ -81,7 +81,11 @@ fun TriviaNavHost(
                     composable(route = HomeDestination.route) {
                         HomeScreen(
                             userViewModel = userViewModel,
-                            onNavigateToQuiz = { navController.navigate(QuizDestination.route) },
+                            onNavigateToQuiz = {
+                                navController.navigate(QuizDestination.route) {
+                                    popUpTo(HomeDestination.route) { inclusive = true }
+                                }
+                            },
                             onNavigateToSummary = {
                                 navController.navigate(SummaryDestination.route) {
                                     popUpTo(HomeDestination.route) { inclusive = true }

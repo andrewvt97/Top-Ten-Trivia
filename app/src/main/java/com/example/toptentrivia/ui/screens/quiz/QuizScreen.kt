@@ -44,6 +44,7 @@ fun QuizScreen(
     val user = userViewModel.user.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.resetState()
         viewModel.getTrivia(userViewModel)
     }
 

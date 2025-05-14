@@ -155,6 +155,17 @@ class QuizViewModel(
         }.start()
     }
 
+    fun resetState() {
+        countDownTimer?.cancel()
+        quizUiState = QuizUiState.Loading
+        currentQuestionIndex.value = 0
+        selectedOption.value = -1
+        answeredCurrentQuestion.value = false
+        score.value = 0
+        correctAnswers.value = 0
+        _remainingTime.value = 10.0f
+    }
+
 
 //    fun resetQuiz(userViewModel: UserViewModel) {
 //

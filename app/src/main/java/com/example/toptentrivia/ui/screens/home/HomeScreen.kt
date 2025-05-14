@@ -194,7 +194,7 @@ private fun StreakCard(user: User) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "${user.streak} Days",
+                text = "${user.streak} ${if (user.streak == 1) "Day" else "Days"}",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
