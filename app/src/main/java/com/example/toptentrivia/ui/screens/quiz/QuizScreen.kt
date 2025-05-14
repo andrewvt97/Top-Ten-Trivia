@@ -137,7 +137,7 @@ fun QuizContent(
 
             // progress text
             val progress = viewModel.startingAttempts + currentIndex + 1
-
+//hj
             Text(
                 text = "$progress/10",
                 fontSize = 14.sp,
