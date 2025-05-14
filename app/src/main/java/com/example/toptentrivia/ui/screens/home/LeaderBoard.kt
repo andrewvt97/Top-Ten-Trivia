@@ -143,8 +143,8 @@ fun LeaderboardScreen(
 @Composable
 fun PodiumProfile(user: com.example.toptentrivia.data.model.User, rank: Int) {
     val size = when (rank) {
-        1 -> 90.dp
-        else -> 70.dp
+        1 -> 100.dp
+        else -> 80.dp
     }
 
     val borderColor = when (rank) {
@@ -171,28 +171,28 @@ fun PodiumProfile(user: com.example.toptentrivia.data.model.User, rank: Int) {
                 contentDescription = "User Profile",
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp)
+                    .padding(2.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = rank.toString(),
-            fontSize = 14.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color.Black
+            color = Color.White
         )
 
         Text(
             text = user.username,
-            fontSize = 14.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
         )
 
         Text(
             text = "${user.pointsToday.toInt()}",
-            fontSize = 12.sp,
+            fontSize = 16.sp,
             color = Color.White
         )
     }
