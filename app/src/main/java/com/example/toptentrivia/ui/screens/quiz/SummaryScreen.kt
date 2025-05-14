@@ -87,8 +87,8 @@ fun SummaryScreen(
             Button(
                 onClick = {
                     viewModel.resetQuiz(userViewModel)
-                    navController.navigate("quiz") {
-                        popUpTo("quiz") { inclusive = true }
+                    navController.navigate("leaderboard") {
+                        popUpTo("leaderboard") { inclusive = true }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -96,7 +96,7 @@ fun SummaryScreen(
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Start New Quiz", fontSize = 16.sp)
+                Text("Leaderboard", fontSize = 16.sp)
             }
         }
         Spacer(modifier = Modifier.height(12.dp))

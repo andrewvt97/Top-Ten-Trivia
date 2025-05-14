@@ -150,4 +150,6 @@ class QuizViewModel(
         _remainingTime.value = 10.0f
         getTrivia(userViewModel)
     }
+
+
 }
