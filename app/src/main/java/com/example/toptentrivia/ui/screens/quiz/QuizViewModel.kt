@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.runtime.State
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 
 import androidx.compose.runtime.mutableStateOf
@@ -46,9 +47,13 @@ class QuizViewModel(
     val score = mutableStateOf(0)
     val correctAnswers = mutableStateOf(0)
 
+    private var _questionsAndAnswers = mutableStateListOf<TriviaQuestions>()
+    val questionsAndAnswers: List<TriviaQuestions> = _questionsAndAnswers
+
 
 
     fun getTrivia(userViewModel: UserViewModel) {
+        // Launches a coroutine within the ViewModel’s lifecycle scope
         viewModelScope.launch {
             quizUiState = QuizUiState.Loading
             try {
@@ -72,6 +77,7 @@ class QuizViewModel(
                 if (triviaQuestions.isNotEmpty()) {
                     quizUiState = QuizUiState.Success(triviaQuestions)
                     userViewModel.incrementOnGameStart()
+
                 } else {
                     quizUiState = QuizUiState.Error
                 }
@@ -94,21 +100,16 @@ class QuizViewModel(
 
     fun answerQuestion(questions: List<TriviaQuestions>, options: List<String>, userViewModel: UserViewModel) {
         if (selectedOption.value != -1 && currentQuestionIndex.value < questions.size) {
-            val current = questions[currentQuestionIndex.value]
-
+            /*val current = questions[currentQuestionIndex.value]
             val correct = current.correctAnswer
-            val selected = options[selectedOption.value]
-            if (selected == correct) {
+            val selected = options[selectedOption.value]*/
+
+            if (options[selectedOption.value] == questions[currentQuestionIndex.value].correctAnswer) {
+                correctAnswers.value += 1
                 val timeLeft = remainingTime.value
                 val points = timeLeft * 10.0
-                /*val points = when {
-                    timeLeft > 5f -> 25
-                    timeLeft > 0f -> 15
-                    else -> 10
-                }*/
-                score.value += points.toInt()
-                correctAnswers.value += 1
                 userViewModel.incrementScore(points)
+                score.value += points.toInt()
             }
         }
     }
@@ -155,9 +156,16 @@ class QuizViewModel(
         }.start()
     }
 
+    //jia's messy functions dont touch-----------
+
+    fun updateQuestionsAndAnswers(questions: List<TriviaQuestions>) {
+        _questionsAndAnswers.clear()
+        // Optionally decode HTML entities in questions before adding
+        _questionsAndAnswers.addAll(questions.map { it.copy(question = decodeHtml(it.question)) })
+    }
+    //---------------------------
 
     fun resetQuiz(userViewModel: UserViewModel) {
-
         countDownTimer?.cancel()
         currentQuestionIndex.value = 0
         selectedOption.value = -1
@@ -165,7 +173,7 @@ class QuizViewModel(
         score.value = 0
         correctAnswers.value = 0
         _remainingTime.value = 10.0f
-        getTrivia(userViewModel)
+        //getTrivia(userViewModel)
     }
 
 

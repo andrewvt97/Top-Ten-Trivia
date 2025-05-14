@@ -58,8 +58,8 @@ fun QuizScreen(
         }
         is QuizUiState.Success -> {
             val questions = quizUiState.questions
+            viewModel.updateQuestionsAndAnswers(quizUiState.questions) //for the summary screen
             QuizContent(navController, viewModel, userViewModel, questions)
-
         }
     }
 }
@@ -301,11 +301,15 @@ fun QuizContent(
         // Next button
         Button(
             onClick = {
+
                 if (answeredQuestion) {
                     if (currentIndex < questions.size - 1) {
                         viewModel.moveToNextQuestion(userViewModel)
                     } else {
                         userViewModel.updateAverage()
+                        scope.launch {
+                            delay(1000) // 1-second delay
+                        }
                         navController.navigate("summary")
                     }
 
@@ -319,6 +323,10 @@ fun QuizContent(
                             viewModel.moveToNextQuestion(userViewModel)
                         } else {
                             userViewModel.updateAverage()
+                            scope.launch {
+                                delay(1000) // 1-second delay
+                            }
+
                             navController.navigate("summary")
                         }
                     }
