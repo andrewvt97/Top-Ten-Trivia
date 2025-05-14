@@ -29,6 +29,8 @@ class QuizViewModel(
     private val triviaRepository: TriviaRepository,
 ) : ViewModel() {
 
+    var startingAttempts = 0
+        private set
 
 
     private var countDownTimer: CountDownTimer? = null
@@ -47,17 +49,28 @@ class QuizViewModel(
 
 
     fun getTrivia(userViewModel: UserViewModel) {
-        // Launches a coroutine within the ViewModel’s lifecycle scope
-
-
         viewModelScope.launch {
             quizUiState = QuizUiState.Loading
             try {
-                val triviaQuestions = triviaRepository.getTriviaQuestions()
-                if (triviaQuestions.isNotEmpty()) {
-                    quizUiState = QuizUiState.Success(triviaQuestions) //load questions from repo
-                    userViewModel.incrementOnGameStart()
+                val user = userViewModel.user.value
+                if (user == null) {
+                    quizUiState = QuizUiState.Error
+                    return@launch
+                }
 
+                val remainingQuestions = 10 - user.questionsAttemptedToday
+                if (remainingQuestions <= 0) {
+                    quizUiState = QuizUiState.Error
+                    return@launch
+                }
+
+                // ✅ Capture starting value
+                startingAttempts = user.questionsAttemptedToday
+
+                val triviaQuestions = triviaRepository.getTriviaQuestions(remainingQuestions)
+                if (triviaQuestions.isNotEmpty()) {
+                    quizUiState = QuizUiState.Success(triviaQuestions)
+                    userViewModel.incrementOnGameStart()
                 } else {
                     quizUiState = QuizUiState.Error
                 }
@@ -67,6 +80,8 @@ class QuizViewModel(
             }
         }
     }
+
+
 
 
     fun selectOption(index: Int) {
