@@ -14,8 +14,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -82,6 +86,8 @@ fun QuizContent(
     val answeredQuestion = viewModel.answeredCurrentQuestion.value
     val remainingTime = viewModel.remainingTime.value
 
+    //for shadow under buttons
+    val cornerRadiusPx = with(LocalDensity.current) { 12.dp.toPx() }
     val options = remember(currentIndex) {
         (currentQuestion.incorrectAnswers + currentQuestion.correctAnswer)
             .map { decodeHtml(it) }
@@ -138,7 +144,6 @@ fun QuizContent(
 
             // progress text
             val progress = viewModel.startingAttempts + currentIndex + 1
-//hj
             Text(
                 text = "$progress/10",
                 fontSize = 14.sp,
@@ -218,7 +223,6 @@ fun QuizContent(
                 val isSelected = selectedOption == index
                 val buttonColor = if (isSelected) Color(0xFF3498DB) else Color.White
                 val textColor = if (isSelected) Color.White else Color.Black
-
                 Button(
                     onClick = {
                         if (!answeredQuestion) {
@@ -226,11 +230,24 @@ fun QuizContent(
                         }
                     },
                     modifier = Modifier
+                        .padding(start = 20.dp, end = 20.dp)
                         .fillMaxWidth()
-                        .shadow(
-                            elevation = if (isSelected) 16.dp else 4.dp,
-                            shape = RoundedCornerShape(8.dp)
-                        ),
+                        /*.shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(12.dp)
+                        )*/
+                        .offset(x = if(isSelected) 4.dp else 0.dp, y = if(isSelected) 4.dp else 0.dp)
+                        .drawBehind {
+                            if(!isSelected) {
+                                translate(left = 4.dp.toPx(), top = 4.dp.toPx()) {
+                                    drawRoundRect(
+                                        color = Color.LightGray,
+                                        cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                                        size = size
+                                    )
+                                }
+                            }
+                        },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     shape = RoundedCornerShape(8.dp),
                     contentPadding = PaddingValues(16.dp)
@@ -267,37 +284,6 @@ fun QuizContent(
                 }
             }
         }
-        /*options.forEachIndexed { index, option ->
-            val isSelected = selectedOption == index
-            val buttonColor = if (isSelected) Color(0xFF3498DB) else Color.White
-            val textColor = if (isSelected) Color.White else Color.Black
-
-            Button(
-                onClick = {
-                    if (!answeredQuestion) {
-                        viewModel.selectOption(index)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .shadow(
-                        elevation = if (isSelected) 8.dp else 2.dp,
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                Text(
-                    text = option,
-                    color = textColor,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }*/
-
-        //Spacer(modifier = Modifier.weight(1f))
 
         // Next button
         Button(
@@ -317,8 +303,6 @@ fun QuizContent(
 
                 } else if (selectedOption != -1) { // check selectedOption
                     viewModel.answerQuestion(questions, options, userViewModel)
-
-
                     scope.launch {
                         delay(1000)
                         if (currentIndex < questions.size - 1) {
@@ -329,7 +313,6 @@ fun QuizContent(
                             scope.launch {
                                 delay(1000) // 1-second delay
                             }
-
                             navController.navigate("summary")
                         }
                     }

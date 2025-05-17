@@ -29,8 +29,8 @@ import com.example.toptentrivia.ui.screens.navbar.BottomNavBar
 import com.example.toptentrivia.ui.screens.quiz.QuizDestination
 import com.example.toptentrivia.ui.screens.quiz.QuizScreen
 import com.example.toptentrivia.ui.screens.quiz.QuizViewModel
-import com.example.toptentrivia.ui.screens.quiz.SummaryDestination
-import com.example.toptentrivia.ui.screens.quiz.SummaryScreen
+import com.example.toptentrivia.ui.screens.summary.SummaryDestination
+import com.example.toptentrivia.ui.screens.summary.SummaryScreen
 import com.example.toptentrivia.ui.screens.signup.SignUpDestination
 import com.example.toptentrivia.ui.screens.signup.SignUpScreen
 

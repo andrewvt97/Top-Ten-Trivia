@@ -295,19 +295,19 @@ private fun PlayOrViewScoreButton(
 
 
 
-//@Composable
-//fun BottomNavBar() {
-//    Row(
-//        horizontalArrangement = Arrangement.SpaceEvenly,
-//        verticalAlignment = Alignment.CenterVertically,
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .background(Color.White)
-//            .padding(12.dp)
-//    ) {
-//        /*NavBarItem(R.drawable.ic_home, "Home", true)
-//        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
-//    } }
+@Composable
+fun BottomNavBar() {
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(12.dp)
+    ) {
+        /*NavBarItem(R.drawable.ic_home, "Home", true)
+        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
+    } }
 
 @Composable
 fun NavBarItem(iconRes: Int, label: String, isSelected: Boolean) {
