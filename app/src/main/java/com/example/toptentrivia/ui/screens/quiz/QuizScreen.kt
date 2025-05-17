@@ -44,6 +44,7 @@ fun QuizScreen(
     val user = userViewModel.user.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.resetState()
         viewModel.getTrivia(userViewModel)
     }
 
@@ -301,16 +302,17 @@ fun QuizContent(
         // Next button
         Button(
             onClick = {
-
                 if (answeredQuestion) {
                     if (currentIndex < questions.size - 1) {
                         viewModel.moveToNextQuestion(userViewModel)
                     } else {
-                        userViewModel.updateAverage()
+
                         scope.launch {
-                            delay(1000) // 1-second delay
+                            delay(300) // wait for Room state to update
+                            userViewModel.updateAverage()
+                            navController.navigate("summary")
                         }
-                        navController.navigate("summary")
+
                     }
 
                 } else if (selectedOption != -1) { // check selectedOption
@@ -322,6 +324,7 @@ fun QuizContent(
                         if (currentIndex < questions.size - 1) {
                             viewModel.moveToNextQuestion(userViewModel)
                         } else {
+                            delay(300) // wait for Room state to update
                             userViewModel.updateAverage()
                             scope.launch {
                                 delay(1000) // 1-second delay

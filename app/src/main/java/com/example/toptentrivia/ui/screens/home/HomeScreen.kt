@@ -6,6 +6,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+/*import androidx.compose.foundation.layout.ColumnScopeInstance.weight
+import androidx.compose.foundation.layout.FlowColumnScopeInstance.weight*/
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -27,10 +29,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.toptentrivia.R
 import com.example.toptentrivia.data.model.User
 import com.example.toptentrivia.ui.navigation.NavigationDestination
 import com.example.toptentrivia.ui.screens.UserViewModel
+import com.example.toptentrivia.ui.screens.navbar.BottomNavBar
 import com.example.toptentrivia.ui.theme.TopTenTriviaTheme
 
 
@@ -72,7 +77,6 @@ fun HomeScreen (
                 totalPointsRank = totalPointsRank,
                 todayPointsRank = todayPointsRank
             )
-            BottomNavBar()
         }
     }
 
@@ -122,7 +126,6 @@ private fun HomeTopBar(username: String) {
                     modifier = Modifier.size(44.dp)
                 )
             }
-
         }
     }
 }
@@ -183,11 +186,11 @@ private fun StreakCard(user: User) {
                 contentDescription = "Streak",
                 modifier = Modifier
                     .size(50.dp)
-                    //.padding(end = 8.dp)
+                //.padding(end = 8.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "${user.streak} Days",
+                text = "${user.streak} ${if (user.streak == 1) "Day" else "Days"}",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -268,7 +271,7 @@ private fun PlayOrViewScoreButton(
     } else {
         "View Score" to onViewScore
     }
-    val cornerRadiusPx = with(LocalDensity.current){8.dp.toPx()}
+
     Button(
         onClick = action,
         shape = RoundedCornerShape(8.dp),
@@ -280,7 +283,7 @@ private fun PlayOrViewScoreButton(
                 translate(left = 2.dp.toPx(), top = 3.dp.toPx()) {
                     drawRoundRect(
                         color = Color.LightGray,
-                        cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                        cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx()),
                         size = size
                     )
                 }
@@ -292,19 +295,19 @@ private fun PlayOrViewScoreButton(
 
 
 
-@Composable
-fun BottomNavBar() {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(12.dp)
-    ) {
-        /*NavBarItem(R.drawable.ic_home, "Home", true)
-        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
-    } }
+//@Composable
+//fun BottomNavBar() {
+//    Row(
+//        horizontalArrangement = Arrangement.SpaceEvenly,
+//        verticalAlignment = Alignment.CenterVertically,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .background(Color.White)
+//            .padding(12.dp)
+//    ) {
+//        /*NavBarItem(R.drawable.ic_home, "Home", true)
+//        NavBarItem(R.drawable.ic_leaderboard, "Leaderboard", false) NavBarItem(R.drawable.ic_profile, "Profile", false) NavBarItem(R.drawable.ic_settings, "Settings", false)*/
+//    } }
 
 @Composable
 fun NavBarItem(iconRes: Int, label: String, isSelected: Boolean) {

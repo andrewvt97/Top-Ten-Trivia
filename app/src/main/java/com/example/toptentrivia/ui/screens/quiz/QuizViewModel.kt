@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.compose.runtime.State
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 
 import androidx.compose.runtime.mutableStateOf
@@ -100,16 +99,16 @@ class QuizViewModel(
 
     fun answerQuestion(questions: List<TriviaQuestions>, options: List<String>, userViewModel: UserViewModel) {
         if (selectedOption.value != -1 && currentQuestionIndex.value < questions.size) {
-            /*val current = questions[currentQuestionIndex.value]
-            val correct = current.correctAnswer
-            val selected = options[selectedOption.value]*/
+            val current = questions[currentQuestionIndex.value]
 
-            if (options[selectedOption.value] == questions[currentQuestionIndex.value].correctAnswer) {
-                correctAnswers.value += 1
+            val correct = current.correctAnswer
+            val selected = options[selectedOption.value]
+            if (selected == correct) {
                 val timeLeft = remainingTime.value
                 val points = timeLeft * 10.0
-                userViewModel.incrementScore(points)
                 score.value += points.toInt()
+                correctAnswers.value += 1
+                userViewModel.incrementScore(points)
             }
         }
     }
@@ -165,15 +164,15 @@ class QuizViewModel(
     }
     //---------------------------
 
-    fun resetQuiz(userViewModel: UserViewModel) {
+    fun resetState() {
         countDownTimer?.cancel()
+        quizUiState = QuizUiState.Loading
         currentQuestionIndex.value = 0
         selectedOption.value = -1
         answeredCurrentQuestion.value = false
         score.value = 0
         correctAnswers.value = 0
         _remainingTime.value = 10.0f
-        //getTrivia(userViewModel)
     }
 
 
