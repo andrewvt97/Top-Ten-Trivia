@@ -78,7 +78,6 @@ fun LeaderboardScreen(
         }
 
         /* ---------- LIST OF THE REMAINING PLAYERS ---------- */
-        /* ---------- LIST OF THE REMAINING PLAYERS ---------- */
         Box( // Wrap the LazyColumn in a Box with gray background
             modifier = Modifier
                 .fillMaxSize()
@@ -95,7 +94,7 @@ fun LeaderboardScreen(
                             .fillMaxWidth()
                             .padding(vertical = 6.dp),
                         shape = RoundedCornerShape(50),
-                        colors = CardDefaults.cardColors(containerColor = Color.White) // Set to white
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Row(
                             modifier = Modifier

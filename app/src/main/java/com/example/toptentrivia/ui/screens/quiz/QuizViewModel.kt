@@ -35,6 +35,7 @@ class QuizViewModel(
 
     private var countDownTimer: CountDownTimer? = null
     private val _remainingTime = mutableStateOf(10.0f)
+    val isNextButtonEnabled = mutableStateOf(true)
     val remainingTime: State<Float> = _remainingTime
 
     var quizUiState: QuizUiState by mutableStateOf(QuizUiState.Loading)
@@ -64,7 +65,7 @@ class QuizViewModel(
                     return@launch
                 }
 
-                // ✅ Capture starting attempts and points
+                // Capture starting attempts and points
                 startingAttempts = user.questionsAttemptedToday
                 score.value = user.pointsToday.toInt() // initialize score from stored value
 
@@ -108,7 +109,7 @@ class QuizViewModel(
                 }*/
                 score.value += points.toInt()
                 correctAnswers.value += 1
-                userViewModel.incrementScore(points)
+                userViewModel.incrementScore(points.toInt())
             }
         }
     }

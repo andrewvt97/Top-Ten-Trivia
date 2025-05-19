@@ -119,15 +119,21 @@ fun SignUpScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Already have an account?")
-            TextButton(onClick = navigateToLogin) {
+            TextButton(
+                onClick = navigateToLogin,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
                 Text("Sign in!")
             }
         }
+
 
         if (uiState.value.errorMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))

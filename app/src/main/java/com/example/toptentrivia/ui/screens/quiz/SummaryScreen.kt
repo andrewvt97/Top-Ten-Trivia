@@ -68,9 +68,9 @@ fun SummaryScreen(
         }
 
         /* ---------- SUMMARY CONTENT ---------- */
-        if (totalQuestions == 0) {
+        if (totalQuestions != 10) {
             Text(
-                text = "You haven't taken the quiz today!",
+                text = "You haven't completed the quiz today!",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,

@@ -108,12 +108,6 @@ fun QuizContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            IconButton(onClick = { /* Optional back action */ }) {
-                Icon(
-                    Icons.Filled.Close, contentDescription = "Back")
-            //Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-
             //Spacer(modifier = Modifier.width(16.dp))
 
             //progress bar
@@ -267,71 +261,46 @@ fun QuizContent(
                 }
             }
         }
-        /*options.forEachIndexed { index, option ->
-            val isSelected = selectedOption == index
-            val buttonColor = if (isSelected) Color(0xFF3498DB) else Color.White
-            val textColor = if (isSelected) Color.White else Color.Black
 
-            Button(
-                onClick = {
-                    if (!answeredQuestion) {
-                        viewModel.selectOption(index)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .shadow(
-                        elevation = if (isSelected) 8.dp else 2.dp,
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                Text(
-                    text = option,
-                    color = textColor,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }*/
-
-        //Spacer(modifier = Modifier.weight(1f))
 
         // Next button
         Button(
             onClick = {
+                if (!viewModel.isNextButtonEnabled.value) return@Button
+                viewModel.isNextButtonEnabled.value = false
+
                 if (answeredQuestion) {
                     if (currentIndex < questions.size - 1) {
                         viewModel.moveToNextQuestion(userViewModel)
+                        viewModel.isNextButtonEnabled.value = true
                     } else {
-
                         scope.launch {
-                            delay(300) // wait for Room state to update
+                            delay(300)
                             userViewModel.updateAverage()
                             navController.navigate("summary")
+                            viewModel.isNextButtonEnabled.value = true
                         }
-
                     }
-
-                } else if (selectedOption != -1) { // check selectedOption
+                } else if (selectedOption != -1) {
                     viewModel.answerQuestion(questions, options, userViewModel)
-
 
                     scope.launch {
                         delay(1000)
                         if (currentIndex < questions.size - 1) {
                             viewModel.moveToNextQuestion(userViewModel)
                         } else {
-                            delay(300) // wait for Room state to update
+                            delay(300)
                             userViewModel.updateAverage()
                             navController.navigate("summary")
                         }
+                        viewModel.isNextButtonEnabled.value = true
                     }
+                } else {
+                    viewModel.isNextButtonEnabled.value = true
                 }
             },
-            modifier = Modifier
+
+                modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 60.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00416A)),

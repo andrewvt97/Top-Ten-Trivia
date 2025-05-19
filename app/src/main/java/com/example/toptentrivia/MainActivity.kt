@@ -21,11 +21,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        val user = User(username = "demo", email = "demo@email.com", password = "1234")
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val db = AppDatabase.getDatabase(applicationContext)
-//            db.userDao().register(user)
-//        }
+
         setContent {
             TopTenTriviaTheme {
                 Surface(

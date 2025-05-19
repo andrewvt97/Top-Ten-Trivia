@@ -26,6 +26,7 @@ class UserViewModel(
         }
     }
 
+    // update necessary stats on login
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshAndUpdateStats() {
         val currentUser = _user.value ?: return
@@ -45,7 +46,7 @@ class UserViewModel(
                 currentUser.streak = 1
             }
 
-            currentUser.pointsToday = 0.0
+            currentUser.pointsToday = 0
             currentUser.correctAnswersToday = 0
             currentUser.questionsAttemptedToday = 0
             currentUser.lastVisitDate = today
@@ -72,11 +73,11 @@ class UserViewModel(
         return result.map { true }
     }
 
-    fun incrementScore(score:Double){
+    fun incrementScore(score:Int){
         val currentUser = _user.value ?: return
 
-        currentUser.pointsToday += score // change when score is updated based on time
-        currentUser.totalPoints += score // change as well
+        currentUser.pointsToday += score
+        currentUser.totalPoints += score
         currentUser.correctAnswersToday += 1
         currentUser.correctAnswersAllTime += 1
         updateUser(currentUser)

@@ -171,7 +171,7 @@ private fun StreakCard(user: User) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .drawBehind {
-                // First draw the shadow shape
+                // draw the shadow shape
                 translate(left = 2.dp.toPx(), top = 4.dp.toPx()) {
                     drawRoundRect(
                         color = Color.LightGray,
